@@ -1,0 +1,110 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot' version '3.2.4' apply false
+    id 'io.spring.dependency-management' version '1.1.4' apply false
+    id 'org.graalvm.buildtools.native' version '0.9.28' apply false
+}
+
+group = 'top.wccloud'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '21'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+ext {
+    set('springCloudVersion', "2023.0.1")
+    springCloudVersion = "2023.0.1"
+}
+dependencies {
+    implementation 'org.hibernate:hibernate-validator:8.0.1.Final'
+}
+
+allprojects{
+    apply plugin: 'java'//重要，没这个不能实现子模块依赖父模块定义的依赖
+
+    group = 'top.wccloud'
+    version = '0.0.1-SNAPSHOT'
+
+    java {
+        sourceCompatibility = '21'
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    repositories {
+        //阿里
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+        //腾讯
+        //maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        //华为
+        //maven { url 'https://developer.huawei.com/repo/' }
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+    }
+
+
+
+}
+
+
+subprojects {
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.graalvm.buildtools.native'
+
+    ext {
+        set('springCloudVersion', "2023.0.1")
+        springCloudVersion = "2023.0.1"
+    }
+
+    dependencies {
+        implementation 'org.hibernate:hibernate-validator:8.0.1.Final'
+
+        implementation 'org.springframework.cloud:spring-cloud-starter'
+//        implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+
+        implementation 'com.alibaba.cloud:spring-cloud-alibaba-dependencies:2022.0.0.0'
+        implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:2022.0.0.0'
+//        implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:2022.0.0.0'
+
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
+
+
+        implementation 'cn.hutool:hutool-all:5.8.27'
+
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+        runtimeOnly 'com.mysql:mysql-connector-j'
+    }
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        }
+    }
+    tasks.bootJar {
+        enabled = true
+    }
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
