@@ -1,0 +1,21 @@
+
+
+dependencies {
+    implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.6'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache:3.2.4'
+    implementation 'com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.5.0'
+
+
+}
+tasks.bootJar {
+    enabled = false
+}
+tasks.processAot {
+    enabled = false
+}
+tasks.nativeCompile {
+    enabled = false
+}
