@@ -24,8 +24,8 @@ impl NamingEventListener for MyInstanceChangeListener {
 }
   pub async  fn init_nacos() {
     let client_props = ClientProps::new()
-        .server_addr("localhost:8849")
-        .namespace("wccloud")
+        .server_addr("home0122:8848")
+        .namespace("wccloud-dev")
         .app_name("simple_app")
         .auth_username("nacos")
         .auth_password("nacos");

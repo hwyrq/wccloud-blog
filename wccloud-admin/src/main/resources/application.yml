@@ -11,11 +11,11 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   cloud:
     nacos:
-      server-addr: localhost:8849
+      server-addr: localhost:8848
       username: nacos
       password: nacos
       discovery:
-        namespace: wccloud
+        namespace: wccloud-dev
   data:
     redis:
       host: home0122

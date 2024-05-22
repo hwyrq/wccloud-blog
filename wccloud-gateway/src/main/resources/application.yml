@@ -13,13 +13,13 @@ spring:
       password: V9fqvTFmQuwhWao2AEqzEHDFH9RnA5YZ
   cloud:
     nacos:
-      server-addr: localhost:8849
+      server-addr: localhost:8848
       username: nacos
       password: nacos
       discovery:
-        namespace: wccloud
+        namespace: wccloud-dev
       config:
-        namespace: wccloud
+        namespace: wccloud-dev
         name: ${spring.application.name}
         file-extension: yml
 
