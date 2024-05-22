@@ -1,0 +1,19 @@
+
+
+configurations.all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+
+}
+
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.security:spring-security-oauth2-authorization-server:1.2.4'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+}
