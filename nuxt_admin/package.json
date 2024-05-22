@@ -1,0 +1,25 @@
+{
+  "name": "nuxt-app",
+  "author": {
+    "name": "wcz",
+    "email": "hwyrqw@163.com",
+    "url": "http://wccloud.top"
+  },
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --port 8000",
+    "generate": "nuxt generate --port 8000",
+    "preview": "nuxt preview --port 8000",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@element-plus/nuxt": "^1.0.8",
+    "@nuxtjs/axios": "^5.13.6",
+    "json-bigint": "^1.0.0",
+    "nuxt": "^3.11.2",
+    "vditor": "^3.10.4",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  }
+}
