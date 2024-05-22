@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wccloud.admin.infrastructure.dao.mapper.SysMenuMapper">
+    <update id="unDelete" parameterType="top.wccloud.admin.infrastructure.dao.entity.SysMenuDO">
+        update sys_menu set deleted = 0 where menu_id = #{menuId}
+    </update>
+
+
+    <delete id="deleteAllByAuto">
+        UPDATE sys_menu SET deleted=1  WHERE create_user_Id = -1
+    </delete>
+    <select id="selectByPathCreate" parameterType="top.wccloud.admin.infrastructure.dao.entity.SysMenuDO" resultType="top.wccloud.admin.infrastructure.dao.entity.SysMenuDO">
+        select*from sys_menu where path = #{path} and create_user_Id = -1
+    </select>
+</mapper>
