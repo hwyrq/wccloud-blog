@@ -1,23 +1,19 @@
 
 import axios from 'axios'
-import type {Action} from "element-plus";
 import jsonBig from "json-bigint";
-
 const requester = axios.create({
-    baseURL: 'http://localhost:8081',
+    baseURL: 'http://127.0.0.1:8081',
     timeout: 15000,
     transformResponse: data => {
         try{
             return jsonBig({"storeAsString": true}).parse(data);
         }catch (err) {
-            console.log(err);
             return JSON.parse(data)
         }
     }
 })
 requester.interceptors.request.use(
     config => {
-        config.headers['Token'] = localStorage.getItem("accessToken")
         return config
     },
     err => {
@@ -26,18 +22,11 @@ requester.interceptors.request.use(
 )
 requester.interceptors.response.use(
     response => {
-        if (response.data.code == -2) {
-            //重新登录
-            ElMessageBox.alert(response.data.msg, '提示', {
-                confirmButtonText: 'OK',
-                callback: (action: Action) => {
-                    localStorage.setItem("accessToken", "1");
-                    location.href = "/login";
-                },
-            });
-            return Promise.reject('error');
+        if (response.data.code !== 0) {
+            return Promise.reject(response.data)
+        } else {
+            return response.data
         }
-        return response.data;
     },
     error => {
         return Promise.reject(error.response)

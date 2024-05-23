@@ -15,11 +15,7 @@ pnpm install
 
 # yarn
 yarn install
-npm install @nuxtjs/axios
-npm install -D sass
-npm install element-plus --save
-npm install json-bigint
-npm install --save-dev @types/json-bigint
+
 # bun
 bun install
 ```
