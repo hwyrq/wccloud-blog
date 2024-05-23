@@ -1,2 +1,2 @@
 rootProject.name = 'wccloud-blog'
-include "wccloud-auth" , "wccloud-common","wccloud-gateway","wccloud-web","wccloud-admin"
+include "wccloud-auth" , "wccloud-common","wccloud-gateway","wccloud-admin"

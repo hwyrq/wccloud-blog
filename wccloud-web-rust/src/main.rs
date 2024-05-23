@@ -31,7 +31,7 @@ async fn main() -> std::io::Result<()> {
             .configure(web_label_controller)
             .configure(web_type_controller)
             .configure(anonymous_blog_controller)
-    }).bind(("localhost", 8085))?.run().await
+    }).bind(("127.0.0.1", 8085))?.run().await
 }
 
 #[test]

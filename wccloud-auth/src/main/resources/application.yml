@@ -18,17 +18,17 @@ spring:
             client-secret: blog-secret
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8082/login/oauth2/code/blog
+            redirect-uri: http://127.0.0.1:8082/login/oauth2/code/blog
             scope: openid,profile
             client-name: wccloud-blog
         provider:
           blog:
-            authorization-uri: http://localhost:8082/oauth2/authorize
-            token-uri: http://localhost:8082/oauth2/token
-            jwk-set-uri: http://localhost:8082/oauth2/jwks
+            authorization-uri: http://127.0.0.1:8082/oauth2/authorize
+            token-uri: http://127.0.0.1:8082/oauth2/token
+            jwk-set-uri: http://127.0.0.1:8082/oauth2/jwks
   cloud:
     nacos:
-      server-addr: localhost:8848
+      server-addr: home0122:8848
       username: nacos
       password: nacos
       discovery:
