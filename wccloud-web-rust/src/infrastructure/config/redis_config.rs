@@ -7,16 +7,14 @@ use redis::Client;
 use redis_pool::connection::RedisPoolConnection;
 use redis_pool::RedisPool;
 use serde::Serialize;
-use xor_str::decode;
-use xor_str::encode;
-use xor_str::xor;
 
-use crate::infrastructure::util::constant::REDIS_CACHE;
+
+use crate::infrastructure::util::constant::{REDIS_CACHE, REDIS_URL};
 
 static  mut CON : Option<RedisPool<Client, MultiplexedConnection>> = None;
 
 pub async  fn init_redis() {
-    let client = redis::Client::open(xor!("redis://:V9fqvTFmQuwhWao2AEqzEHDFH9RnA5YZ@home0122:6379/")).unwrap();
+    let client = redis::Client::open(REDIS_URL.to_string()).unwrap();
     let pool = RedisPool::from(client);
     unsafe { CON = Some(pool) }
 }

@@ -70,6 +70,24 @@ onMounted(async () => {
   vd = new Vditor('vditor', {
     placeholder: '正文......',
     counter: {enable: true, type: 'markdown'},
+    upload:{
+      url:request.defaults.baseURL+ "/wccloud-web-rust/file/upload",
+      headers:{
+        ["Token"]: localStorage.getItem("accessToken"),
+      },
+
+      success(editor, msg) {
+        console.log(editor);
+        let res = JSON.parse(msg);
+        if (res.code != 0) {
+          ElMessage({message: "上传失败", type: "error"});
+        } else {
+            for (const url of res.data) {
+              vd?.setValue(vd?.getValue() + "![]("+url+")");
+            }
+        }
+      },
+    }
   });
   vdStyle.value = {height: window.innerHeight - 308 + "px"}
   window.addEventListener("resize", () => {
