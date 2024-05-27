@@ -14,6 +14,7 @@ import top.wccloud.auth.application.AuthUserService;
 import top.wccloud.auth.controller.vo.LoginRespVO;
 import top.wccloud.auth.controller.vo.AuthUserVO;
 import top.wccloud.common.Result;
+import top.wccloud.common.dto.ResetPwdDTO;
 
 /**
  * @author wcz
@@ -47,5 +48,12 @@ public class AuthController {
     @ResponseBody
     public Result<LoginRespVO> logout(String token) {
         return authUserService.logout(token);
+    }
+
+    @Operation(summary = "重置密码")
+    @PostMapping("/reset-pwd")
+    @ResponseBody
+    public Result<Boolean> resetPwd(@Validated @RequestBody ResetPwdDTO resetPwdDTO) {
+        return authUserService.resetPwd(resetPwdDTO);
     }
 }

@@ -6,7 +6,7 @@
         </h3>
         <span >
           <a :href="'/info/'+item.blogId" target="_self"  title>
-            <img style="width: 250px" v-if="item.img" :src="item.img" alt>
+            <img style="width: 250px" v-if="item.imgUrl" :src="item.imgUrl" alt>
           </a>
         </span>
         <p  style="font-size: 14px;color: #566573">{{ item.summary }}</p>

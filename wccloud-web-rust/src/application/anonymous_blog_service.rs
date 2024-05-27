@@ -45,6 +45,7 @@ pub async fn one(blog_id:i64) -> ResultVO<WebBlogOneRespVO> {
     return ResultVO::success(WebBlogOneRespVO {
         blog_id: option.blog_id,
         title: option.title,
+        img_url: option.img_url,
         summary: option.summary,
         type_name: op.unwrap().type_name,
         label_name: Some(vec1),

@@ -17,8 +17,11 @@ import top.wccloud.auth.controller.vo.LoginRespVO;
 import top.wccloud.auth.doman.AuthUser;
 import top.wccloud.auth.doman.AuthUserRepository;
 import top.wccloud.auth.infrastructure.dao.converter.AuthUserConvert;
+import top.wccloud.auth.infrastructure.dao.entity.AuthUserDO;
 import top.wccloud.auth.infrastructure.dao.mapper.AuthUserMapper;
 import top.wccloud.common.Result;
+import top.wccloud.common.dto.ResetPwdDTO;
+
 /**
  * @author wcz
  */
@@ -58,10 +61,10 @@ public class AuthUserServiceImpl implements AuthUserService {
         AuthUser sysUser = AuthUserConvert.INSTANCE.convert1(user);
         //校验登录
         authUserRepository.loginCheck(sysUser);
-        //生成token
-        authUserRepository.loginToken(sysUser);
         //赋值数据
         authUserRepository.loginData(sysUser);
+        //生成token
+        authUserRepository.loginToken(sysUser);
 
         return Result.success("登录成功！", AuthUserConvert.INSTANCE.convert2(sysUser) );
     }
@@ -70,5 +73,21 @@ public class AuthUserServiceImpl implements AuthUserService {
     public Result<LoginRespVO> logout(String token) {
         authUserRepository.logoutToken(token);
         return Result.success("登出成功！", null);
+    }
+
+    @Override
+    public Result<Boolean> resetPwd(ResetPwdDTO resetPwdDTO) {
+        Long userId = (Long) redisTemplate.opsForValue().get("accessToken:" + resetPwdDTO.getToken());
+        if (userId == null) {
+            return Result.error("登录失效", false);
+        }
+        AuthUserDO authUserDO = authUserRepository.getById(userId);
+        boolean bcryptCheck = DigestUtil.bcryptCheck(resetPwdDTO.getPwd(), authUserDO.getPassword());
+        if (!bcryptCheck) {
+            return Result.error("原密码错误", false);
+        }
+        authUserDO.setPassword(DigestUtil.bcrypt(resetPwdDTO.getNewPwd()));
+        authUserRepository.updateById(authUserDO);
+        return Result.success("",true);
     }
 }

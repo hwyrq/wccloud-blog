@@ -1,1 +1,9 @@
 /wccloud-web-rust/target/
+.gradle/
+.idea/
+.build/
+.vscode/
+r.md
+nuxt_admin/package-lock.json
+nuxt_web/package-lock.json
+wccloud-web-rust/Cargo.lock

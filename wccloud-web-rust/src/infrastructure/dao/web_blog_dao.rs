@@ -11,7 +11,7 @@ use crate::infrastructure::config::sea_config::master;
 
 lazy_static! {
      static ref  PAGE_SQL:String = xor!("
-    select a.blog_id, a.title, a.summary, a.type_id, a.level, a.enable_comment,
+    select a.blog_id, a.title,a.img_url, a.summary, a.type_id, a.level, a.enable_comment,
      a.status,a.update_time,b.type_name,c.label_name
 from web_blog a
 left join web_type b on a.type_id = b.type_id

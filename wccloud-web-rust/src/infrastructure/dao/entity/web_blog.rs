@@ -17,6 +17,7 @@ pub struct Model {
     pub status: i8,
     pub html: String,
     pub md: String,
+    pub img_url: String,
     pub create_user_id: i64,
     pub create_time: DateTime,
     pub update_user_id: i64,

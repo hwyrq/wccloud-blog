@@ -14,6 +14,8 @@ import top.wccloud.admin.infrastructure.fegin.AuthFeignClient;
 import top.wccloud.common.dto.AuthUserDTO;
 import top.wccloud.common.dto.LoginRespDTO;
 import top.wccloud.common.Result;
+import top.wccloud.common.dto.ResetPwdDTO;
+
 /**
  * @author wcz
  */
@@ -45,6 +47,15 @@ public class AuthController {
     @PostMapping("/logout")
     @ResponseBody
     public Result<LoginRespDTO> logout(HttpServletRequest request) {
-        return authUserService.logout(request.getHeader("token"));
+        return authUserService.logout(request.getHeader("Token"));
+    }
+
+    @Operation(summary = "重置密码")
+    @PostMapping("/reset-pwd")
+    @ResponseBody
+    public Result<Boolean> resetPwd(@Validated @RequestBody ResetPwdDTO resetPwdDTO,HttpServletRequest request) {
+        String token = request.getHeader("Token");
+        resetPwdDTO.setToken(token);
+        return authUserService.resetPwd(resetPwdDTO);
     }
 }

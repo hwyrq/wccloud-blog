@@ -72,8 +72,8 @@ public class SecurityConfig {
                     List<String> tokenList = object.getExchange().getRequest().getHeaders().get("Token");
                     if (tokenList != null) {
                         String tokenValue = tokenList.getFirst();
-                        Boolean hasKey = redisTemplate.hasKey("accessToken:" + tokenValue);
-                        if (hasKey == null || !hasKey) {
+                        Boolean hasKey = redisTemplate.opsForValue().get("accessToken:" + tokenValue) != null;
+                        if (!hasKey) {
                             throw new ServiceException(JSONUtil.toJsonStr(Result.error(-2, "未登录，请登录", null)));
                         }
 

@@ -19,6 +19,7 @@ import top.wccloud.auth.infrastructure.dao.entity.AuthUserDO;
 import top.wccloud.auth.infrastructure.dao.mapper.AuthUserMapper;
 import top.wccloud.common.ServiceException;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,13 +29,19 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 @CacheConfig(cacheNames = "auth_user", keyGenerator = "cacheKeyGenerator")
-public class AuthUserRepositoryImpl extends ServiceImpl<AuthUserMapper, AuthUserDO> implements AuthUserRepository, IService<AuthUserDO> {
+public class AuthUserRepositoryImpl extends ServiceImpl<AuthUserMapper, AuthUserDO> implements AuthUserRepository {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     @Resource
     private AuthUserRepository authUserRepository;
+
+    @Cacheable(sync = true)
+    @Override
+    public AuthUserDO getById(Serializable id) {
+        return super.getById(id);
+    }
 
     @Cacheable(sync = true,key = "#root.methodName+':'+#username")
     @Override
@@ -97,5 +104,10 @@ public class AuthUserRepositoryImpl extends ServiceImpl<AuthUserMapper, AuthUser
             throw new ServiceException("用户名已存在");
         }
         return super.save(entity);
+    }
+    @CacheEvict(allEntries = true)
+    @Override
+    public boolean updateById(AuthUserDO entity) {
+        return super.updateById(entity);
     }
 }

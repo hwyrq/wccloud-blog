@@ -34,5 +34,5 @@ redis = {version =  "0",features = ["tokio-comp","json"]  }
 redis_pool = "0"
 xor-str="*"
 
-minio="*"
+minio= {git = "https://github.com/minio/minio-rs.git" }
 futures-util = "0.3.30"

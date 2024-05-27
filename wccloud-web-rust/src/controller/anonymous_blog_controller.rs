@@ -51,7 +51,8 @@ pub async fn upload(mut arg: Multipart) -> impl Responder {
         let content_disposition = field.content_disposition();
         let filename = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis().to_string() + "_" +
             content_disposition.get_filename().unwrap();
-        let response = client.create_multipart_upload(&CreateMultipartUploadArgs::new(&bucket_name, &*filename).unwrap()).await.unwrap();
+
+        let response = client.create_multipart_upload_old(&CreateMultipartUploadArgs::new(&bucket_name, &*filename).unwrap()).await.unwrap();
         let mut vec1: Vec<u8> = vec![];
         let mut num = 1;
         let mut parts: Vec<Part> = Vec::new();
@@ -60,9 +61,9 @@ pub async fn upload(mut arg: Multipart) -> impl Responder {
             vec1.append(&mut vec2)
         }
         let x = vec1.iter().as_slice();
-        let object_base_response = client.upload_part(&UploadPartArgs::new(&bucket_name, &*filename, &*response.upload_id, num, x).unwrap()).await.unwrap();
+        let object_base_response = client.upload_part_old(&UploadPartArgs::new(&bucket_name, &*filename, &*response.upload_id, num, x).unwrap()).await.unwrap();
         parts.push(Part { number: num, etag: object_base_response.etag });
-        let put_object_base_response = client.complete_multipart_upload(&CompleteMultipartUploadArgs::new(&bucket_name, &*filename, &*response.upload_id, &parts).unwrap()).await.unwrap();
+        let put_object_base_response = client.complete_multipart_upload_old(&CompleteMultipartUploadArgs::new(&bucket_name, &*filename, &*response.upload_id, &parts).unwrap()).await.unwrap();
         url.push(put_object_base_response.location);
     }
     return ResultVO::success(url);

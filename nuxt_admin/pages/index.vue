@@ -14,10 +14,10 @@ let route = useRoute();
 if (route.path == "/") {
   useRouter().push("/home");
 }
-if (route.path == "/home") {
-  layout.value = "admin";
-}else {
+if (route.path == "/login") {
   layout.value = "none";
+}else {
+  layout.value = "admin";
 }
 
 </script>

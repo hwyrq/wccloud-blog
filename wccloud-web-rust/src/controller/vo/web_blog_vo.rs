@@ -16,6 +16,7 @@ pub struct WebBlogPageReqVO {
 pub struct WebBlogPageRespVO {
    pub blog_id: i64,
    pub title: String,
+   pub img_url: String,
    pub summary: String,
    pub type_name: String,
    pub label_name: String,
@@ -29,6 +30,7 @@ pub struct WebBlogPageRespVO {
 pub struct WebBlogSaveReqVO {
    pub blog_id: Option<String>,
    pub title: String,
+   pub img_url: Option<String>,
    pub summary: String,
    pub type_name: String,
    pub label_name: Vec<String>,
@@ -44,6 +46,7 @@ pub struct WebBlogSaveReqVO {
 pub struct WebBlogOneRespVO {
    pub blog_id: i64,
    pub title: String,
+   pub img_url: String,
    pub summary: String,
    pub type_name: String,
    pub label_name: Option<Vec<String>>,

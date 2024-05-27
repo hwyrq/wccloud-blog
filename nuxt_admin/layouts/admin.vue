@@ -28,6 +28,7 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item >个人中心</el-dropdown-item>
+                    <el-dropdown-item command="resetPassword">修改密码</el-dropdown-item>
                     <el-dropdown-item command="logout">退出系统</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -47,7 +48,7 @@
       </el-col>
     </el-row>
   </div>
-
+<reset-pwd ref="pwdRef"/>
 </template>
 
 <script setup lang="ts">
@@ -97,12 +98,14 @@ onMounted(async () => {
 
 
 const breadcrumb = ref([]);
+const pwdRef = ref(null);
 const handleCommand = async function (command: string) {
   if (command == "logout") {
     let data = await logout();
     ElMessage({message: data.msg, type: 'success'});
     location.href = "/login";
-
+  }else if (command == "resetPassword") {
+    pwdRef.value.setDialogVisible(true);
   }
 
 };

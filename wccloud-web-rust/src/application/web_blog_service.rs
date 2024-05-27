@@ -129,6 +129,10 @@ pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
         status: arg.status,
         html: (arg.html).parse().unwrap(),
         md: (arg.md).parse().unwrap(),
+        img_url: match &arg.img_url {
+            None => {"".to_string()}
+            Some(v) => {v.to_string()}
+        },
         create_user_id: 0,
         create_time: DateTime::default(),
         update_user_id: 0,
@@ -179,6 +183,7 @@ pub async fn one(blog_id:i64) -> ResultVO<WebBlogOneRespVO> {
     return ResultVO::success(WebBlogOneRespVO {
         blog_id: option.blog_id,
         title: option.title,
+        img_url: option.img_url,
         summary: option.summary,
         type_name: op.unwrap().type_name,
         label_name: Some(vec1),

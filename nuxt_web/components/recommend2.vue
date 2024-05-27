@@ -5,11 +5,11 @@
       <a :href="'/info/'+item.blogId" target="_self">
         <img
             style="width: 400px;height: 220px"
-            v-if="item.img"
-            :src="item.img"
+            v-if="item.imgUrl"
+            :src="item.imgUrl"
             :alt="item.title"
         />
-        <div style="width: 400px;height: 220px;background-color: rgb(248,248,248)" v-if="!item.img"></div>
+        <div style="width: 400px;height: 220px;background-color: rgb(248,248,248)" v-if="!item.imgUrl"></div>
 
         <div  class="text-span">
           <span>{{ item.title }}</span>
