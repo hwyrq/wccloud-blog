@@ -24,7 +24,7 @@ import {page} from "~/api";
 import {useAsyncData} from "#app";
 const isEnd = ref(false);
 const total = ref();
-let pageSize = 2;
+let pageSize = 5;
 let pageNum = 1;
 // let pageList = ref([]);
 const {data:{value:data}} = await useAsyncData(() => page({pageNum: pageNum, pageSize: pageSize}));
@@ -32,7 +32,7 @@ let pageList = ref(data.data.list);
 total.value = data.data.total;
 
 onMounted( () => {
-   loadContent();
+   // loadContent();
 });
 
 const loadContent = async function () {

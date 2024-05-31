@@ -1,5 +1,6 @@
 //! author wcz
 use std::time::Duration;
+use fastdate::DurationFrom;
 
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 
@@ -13,8 +14,8 @@ pub async  fn init_sea()  {
         .min_connections(5)
         .connect_timeout(Duration::from_secs(8))
         .acquire_timeout(Duration::from_secs(8))
-        .idle_timeout(Duration::from_secs(60*60*3))
-        .max_lifetime(Duration::from_secs(8))
+        .idle_timeout(Duration::from_hour(1))
+        .max_lifetime(Duration::from_hour(3))
         .sqlx_logging(true)
         .sqlx_logging_level(log::LevelFilter::Info);
 //entity-orm-cli generate entity -u mysql://root:9eD4PYotLh9f7u2KJnqxUCyX3kQZSXhn@home0122:3306/wccloud_blog -o src/infrastructure/dao/entity

@@ -8,7 +8,7 @@
                 style="width: 800px;height: 450px"
                 v-if="item.imgUrl"
                 :src="item.imgUrl"
-                :alt="item.title"
+
                 />
             <div style="width: 800px;height: 450px;background-color: rgb(248,248,248)" v-if="!item.imgUrl"></div>
             <div  class="text-span">

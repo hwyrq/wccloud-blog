@@ -4,10 +4,10 @@
     <el-card  shadow="hover" style="width: 400px;height: 220px;" v-for="item in dataList" >
       <a :href="'/info/'+item.blogId" target="_self">
         <img
-            style="width: 400px;height: 220px"
+            style="width: 400px;height: 220px;display: block"
             v-if="item.imgUrl"
             :src="item.imgUrl"
-            :alt="item.title"
+
         />
         <div style="width: 400px;height: 220px;background-color: rgb(248,248,248)" v-if="!item.imgUrl"></div>
 
@@ -38,7 +38,7 @@ const dataList = data.data;
   position: absolute;
   text-align: center;
   width: 400px;
-  bottom: 30px;
+  bottom: 20px;
   /* height: 40px; */
   /* border: 1px solid grey; */
   background: rgba(0, 0, 0, 0.3);

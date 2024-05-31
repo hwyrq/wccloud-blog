@@ -28,7 +28,6 @@ sea-orm = { version = "0.12", features = ["sqlx-mysql", "runtime-tokio-native-tl
 log = "0.4"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-spaceflake = "1"
 
 redis = {version =  "0",features = ["tokio-comp","json"]  }
 redis_pool = "0"
@@ -36,3 +35,6 @@ xor-str="*"
 
 minio= {git = "https://github.com/minio/minio-rs.git" }
 futures-util = "0.3.30"
+
+rs-snowflake = "*"
+rand = { version = "0.8.5", features = [] }

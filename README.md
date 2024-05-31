@@ -1,39 +1,30 @@
 # wccloud-blog
 
 #### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+
+wccloud-blog 是 基于DDD & jdk21 & springcloud alibaba & gradle & rust & nuxt vue 的微服务架构混合语言的博客平台
+
 
 #### 软件架构
-软件架构说明
+java 后端采用 gradle, spring cloud alibaba , spring security, spring data redis ,spring cache, mybatisPlus, hibernate-validator, mapstruc, knife4j
 
+rust 后端采用 tokio,actix-web,sea-orm, minio
 
-#### 安装教程
+web 前端采用 nuxt,vue,element-plus,axios , vditor
 
-1.  xxxx1
-2.  xxxx
-3.  xxxx
+### 模块说明
+common      java后端公共代码，包含公共的异常、返回值、校验组 等
 
-#### 使用说明
+auth        java后端认证服务，包含登录、登出、注册
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+admin       java后端管理服务，包含菜单
 
-#### 参与贡献
+gateway     java后端网关服务，包含统一认证校验
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+web-rust    rust后端博客服务，包含博客crud,博客门户展示，轮播图，一及推荐，二级推荐，标签，分类
 
+nuxt-admin  nuxt前端后台管理
 
-#### 特技
+nuxt-web    nuxt博客门户网站
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+### 
