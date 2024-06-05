@@ -1,4 +1,6 @@
 //! author wcz
+use std::thread;
+use std::time::Duration;
 use actix_web::{App, HttpServer, };
 use tokio::join;
 
@@ -9,6 +11,7 @@ use crate::controller::web_type_controller::web_type_controller;
 use crate::infrastructure::config::nacos_config::init_nacos;
 use crate::infrastructure::config::redis_config::init_redis;
 use crate::infrastructure::config::sea_config::init_sea;
+use crate::infrastructure::config::snow_flake_config::init_snow_flake;
 
 mod infrastructure;
 
@@ -22,7 +25,7 @@ mod controller;
 async fn main() -> std::io::Result<()> {
 
     tracing_subscriber::fmt::init();
-    join!(init_nacos(),init_sea(),init_redis());
+    join!(init_nacos(),init_sea(),init_redis(),init_snow_flake());
 
     HttpServer::new(|| {
         App::new()
@@ -36,14 +39,6 @@ async fn main() -> std::io::Result<()> {
 
 
 #[test]
-/// 测试一下雪花id
 fn test1(){
-    let machine_id = rand::distributions::Uniform::new(1, 32).sample(&mut rand::thread_rng());
-    let node_id = rand::distributions::Uniform::new(1, 32).sample(&mut rand::thread_rng());
-   
-    let mut generator = SnowflakeIdGenerator
-    ::with_epoch(machine_id, node_id, UNIX_EPOCH + Duration::from_millis(1288834974657));
-    for i in 0..11 {
-        println!("{}", generator.real_time_generate());
-    }
+  
 }

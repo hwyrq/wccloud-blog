@@ -60,7 +60,7 @@ impl NamingEventListener for MyInstanceChangeListener {
     let subscriber = Arc::new(MyInstanceChangeListener);
     let _subscriber_ret = naming_server.subscribe("wccloud-web-rust".to_string(), Some(constants::DEFAULT_GROUP.to_string()), Vec::default(), subscriber);
     let server_instance = ServiceInstance {
-        ip: "127.0.0.1".to_string(),
+        ip: "home0122".to_string(),
         port: 8085,
         ..Default::default()
     };

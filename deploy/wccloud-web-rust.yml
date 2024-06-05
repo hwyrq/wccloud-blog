@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  wccloud-web-rust:
+    image: wccloud-web-rust:latest
+    build:
+      context: ../wccloud-web-rust
+      dockerfile: Dockerfile
+    container_name: wccloud-web-rust
+    restart: always
+    ports:
+      - "8085:8085"
+    networks:
+      - docker_network
+    volumes:
+      - /etc/hosts:/etc/hosts
+      - /home/skywalking-agent:/home/skywalking-agent
+networks:
+  docker_network:
+    driver: bridge

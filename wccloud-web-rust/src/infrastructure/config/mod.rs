@@ -4,4 +4,5 @@ pub mod nacos_config;
 
 pub mod sea_config;
 pub mod redis_config;
+pub mod snow_flake_config;
 

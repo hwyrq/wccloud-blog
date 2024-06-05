@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  wccloud-admin:
+    image: wccloud-admin:latest
+    build:
+      context: ../wccloud-admin
+      dockerfile: Dockerfile
+    container_name: wccloud-admin
+    restart: always
+    ports:
+      - "8084:8084"
+    networks:
+      - docker_network
+    volumes:
+      - /etc/hosts:/etc/hosts
+      - /home/skywalking-agent:/home/skywalking-agent
+networks:
+  docker_network:
+    driver: bridge

@@ -8,11 +8,11 @@ use tokio::join;
 use crate::controller::vo::web_blog_vo::{WebBlogOneRespVO, WebBlogPageReqVO, WebBlogPageRespVO, WebBlogSaveReqVO};
 use crate::infrastructure::config::redis_config::{cache_hash_key, cache_hash_key_field, redis_master};
 use crate::infrastructure::config::sea_config::master;
+use crate::infrastructure::config::snow_flake_config;
 use crate::infrastructure::dao::entity::{web_blog, web_blog_label, web_label, web_type};
 use crate::infrastructure::dao::entity::prelude::{WebBlog, WebBlogLabel, WebLabel, WebType};
 use crate::infrastructure::dao::web_blog_dao::{get_count, get_page_list};
 use crate::infrastructure::util::result::{PageResultVO, ResultVO, SuccessData};
-use crate::infrastructure::util::snow_flake;
 
 pub async fn  page(req_vo: &WebBlogPageReqVO) -> ResultVO<PageResultVO<WebBlogPageRespVO>> {
 
@@ -32,8 +32,8 @@ pub async fn  page(req_vo: &WebBlogPageReqVO) -> ResultVO<PageResultVO<WebBlogPa
 }
 
 pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
-    let mut type_id = snow_flake::next_id();
-    let mut blog_id = snow_flake::next_id();
+    let mut type_id = snow_flake_config::next_id();
+    let mut blog_id = snow_flake_config::next_id();
 
     match arg.clone().blog_id {
         None => {}
@@ -92,7 +92,7 @@ pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
         if !contains_name.contains(&label_name) {
             //不包含，则新增
             let result = WebLabel::insert(web_label::Model {
-                label_id: snow_flake::next_id(),
+                label_id: snow_flake_config::next_id(),
                 label_name: label_name.to_string(),
                 create_user_id: 0,
                 create_time: DateTime::default(),

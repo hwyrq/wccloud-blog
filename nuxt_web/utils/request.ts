@@ -2,7 +2,7 @@
 import axios from 'axios'
 import jsonBig from "json-bigint";
 const requester = axios.create({
-    baseURL: 'http://127.0.0.1:8081',
+    baseURL: 'http://home0122:8081',
     timeout: 15000,
     transformResponse: data => {
         try{

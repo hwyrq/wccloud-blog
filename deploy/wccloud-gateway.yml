@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  wccloud-gateway:
+    image: wccloud-gateway:latest
+    build:
+      context: ../wccloud-gateway
+      dockerfile: Dockerfile
+    container_name: wccloud-gateway
+    restart: always
+    ports:
+      - "8081:8081"
+    networks:
+      - docker_network
+    volumes:
+      - /etc/hosts:/etc/hosts
+      - /home/skywalking-agent:/home/skywalking-agent
+networks:
+  docker_network:
+    driver: bridge
