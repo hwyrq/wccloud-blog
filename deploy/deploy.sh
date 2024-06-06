@@ -71,24 +71,36 @@ echo $works
 #node
 #配置npm加速代理
 npm config set registry https://registry.npmmirror.com
+npm -version
+node --version
 
-#if [ "$(echo $works|grep 'nuxi_admin')" != '' ]; then
-  echo '##########开始构建nuxi_admin##########'
-  cd nuxi_admin || exit
-  npm install
-  npm run build
-  docker stop nuxi_admin && docker rm nuxi_admin && docker rmi nuxi_admin
-  cd ..
-  cd deploy || exit
-  docker compose -f nuxi_admin.yml up -d
-#fi
-#if [ "$(echo $works|grep 'nuxi_web')" != '' ]; then
-#  echo '##########开始构建nuxi_web##########'
-#  cd nuxi_web || exit
+##if [ "$(echo $works|grep 'nuxt_admin')" != '' ]; then
+#  echo '##########开始构建nuxt_admin##########'
+#  cd ..
+#  cd nuxt_admin || exit
+#  pwd
+#  echo 'npm install...'
 #  npm install
+#  echo 'npm run build...'
 #  npm run build
-#  docker stop nuxi_web && docker rm nuxi_web && docker rmi nuxi_web
+#  if [ "$(docker ps|grep nuxt_admin)" != "" ]; then
+#   docker stop nuxt_admin && docker rm nuxt_admin && docker rmi nuxt_admin
+#  fi
 #  cd ..
 #  cd deploy || exit
-#  docker compose -f nuxi_web.yml up -d
+#  echo 'docker compose -f nuxt_admin.yml up -d'
+#  docker compose -f nuxt_admin.yml up -d
+##fi
+#if [ "$(echo $works|grep 'nuxt_web')" != '' ]; then
+  echo '##########开始构建nuxt_web##########'
+  cd ..
+  cd nuxt_web || exit
+  npm install
+  npm run build
+  if [ "$(docker ps|grep nuxt_web)" != "" ]; then
+   docker stop nuxt_web && docker rm nuxt_web && docker rmi nuxt_web
+  fi
+  cd ..
+  cd deploy || exit
+  docker compose -f nuxt_web.yml up -d
 #fi

@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  nuxi_admin:
-    image: nuxi_admin:latest
+  nuxt_admin:
+    image: nuxt_admin:latest
     build:
       context: ../nuxt_admin
-      dockerfile: ../nuxt_admin/Dockerfile
-    container_name: nuxi_admin
+      dockerfile: Dockerfile
+    container_name: nuxt_admin
     restart: always
     ports:
       - "8001:8001"
