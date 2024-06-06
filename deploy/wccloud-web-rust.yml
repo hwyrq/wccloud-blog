@@ -14,7 +14,7 @@ services:
       - docker_network
     volumes:
       - /etc/hosts:/etc/hosts
-      - /home/skywalking-agent:/home/skywalking-agent
+      - /wccloud-web-rust:/home/docker/jenkins/jenkins_home/workspace/wccloud/wccloud-web-rust
 networks:
   docker_network:
     driver: bridge
