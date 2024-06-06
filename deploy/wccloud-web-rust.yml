@@ -14,7 +14,6 @@ services:
       - docker_network
     volumes:
       - /etc/hosts:/etc/hosts
-      - /wccloud-web-rust:/home/docker/jenkins/jenkins_home/workspace/wccloud/wccloud-web-rust
 networks:
   docker_network:
     driver: bridge
