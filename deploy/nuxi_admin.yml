@@ -1,15 +1,15 @@
 version: '3'
 
 services:
-  wccloud_web:
-    image: nuxi_web:latest
+  nuxi_admin:
+    image: nuxi_admin:latest
     build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: nuxi_web
+      context: ../nuxt_admin
+      dockerfile: ../nuxt_admin/Dockerfile
+    container_name: nuxi_admin
     restart: always
     ports:
-      - "3001:3001"
+      - "8001:8001"
     networks:
       - docker_network
     volumes:
