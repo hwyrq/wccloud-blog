@@ -2,8 +2,8 @@ FROM rust
 EXPOSE 8085
 
 WORKDIR wccloud-web-rust
-COPY Cargo.toml .
-COPY src .
+COPY Cargo.toml /wccloud-web-rust
+COPY src /wccloud-web-rust
 RUN pwd
 RUN ls
 
