@@ -17,6 +17,9 @@ package(){
 }
 #获取git提交的日志，提交了那个服务，就部署哪个服务，未变更的则不会部署
 works=$(git log -1 --stat |awk -F ' ' '{print $1}' |awk -F '/' '{print $1}' | awk '$0="#"$0"#"')
+
+#手动修改这里，临时重新部署某一个
+#works='#wccloud-admin# #wccloud-auth# #wccloud-gateway# #wccloud-web-rust# #nuxt_admin# #nuxt_web# '
 echo "works: "
 echo $works
 #java
@@ -74,7 +77,7 @@ npm config set registry https://registry.npmmirror.com
 npm -version
 node --version
 
-if [ "$(echo $works|grep 'nuxt_admin')" != '' ]; then
+if [ "$(echo $works|grep '#nuxt_admin#')" != '' ]; then
   echo '##########开始构建nuxt_admin##########'
   cd ..
   cd nuxt_admin || exit
@@ -91,7 +94,7 @@ if [ "$(echo $works|grep 'nuxt_admin')" != '' ]; then
   echo 'docker compose -f nuxt_admin.yml up -d'
   docker compose -f nuxt_admin.yml up -d
 fi
-if [ "$(echo $works|grep 'nuxt_web')" != '' ]; then
+if [ "$(echo $works|grep '#nuxt_web#')" != '' ]; then
   echo '##########开始构建nuxt_web##########'
   cd ..
   cd nuxt_web || exit

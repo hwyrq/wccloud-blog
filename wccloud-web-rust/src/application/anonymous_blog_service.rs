@@ -66,7 +66,7 @@ pub(crate) async fn level(level: i8)->ResultVO<Vec<WebBlogPageRespVO>> {
 
 pub(crate) async fn label() -> ResultVO<Vec<WebLabelResp>> {
     let sql = xor!(r#"
-    select a.label_id,a.label_name
+    select distinct a.label_id,a.label_name
 from web_label a 
 join web_blog_label b on a.label_id = b.label_id
 join web_blog c on c.blog_id = b.blog_id
