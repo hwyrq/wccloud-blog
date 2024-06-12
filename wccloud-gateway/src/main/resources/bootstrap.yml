@@ -1,0 +1,42 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: wccloud-gateway-server
+  cloud:
+    nacos:
+      server-addr: home0122:8848
+      username: nacos
+      password: nacos
+      discovery:
+        namespace: wccloud-dev
+      config:
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        name: wccloud-shared
+        file-extension: yaml
+    gateway:
+      routes:
+        - id: auth
+          uri: lb://wccloud-auth-server
+          predicates:
+            - Path=/wccloud-auth-server/**
+          filters:
+            - StripPrefix=1
+        - id: web
+          uri: lb://wccloud-web-server
+          predicates:
+            - Path=/wccloud-web-server/**
+          filters:
+            - StripPrefix=1
+        - id: admin
+          uri: lb://wccloud-admin-server
+          predicates:
+            - Path=/wccloud-admin-server/**
+          filters:
+            - StripPrefix=1
+        - id: web
+          uri: lb://wccloud-web-rust
+          predicates:
+            - Path=/wccloud-web-rust/**
+          filters:
+            - StripPrefix=1

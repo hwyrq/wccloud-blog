@@ -2,7 +2,9 @@
 import axios from 'axios'
 import jsonBig from "json-bigint";
 const requester = axios.create({
-    baseURL: 'http://home0122:8081',
+    // baseURL: process.env.BASE_URL,
+    // baseURL: "http://home0122:8081",
+    baseURL: 'http://wccloud.top',
     timeout: 15000,
     transformResponse: data => {
         try{

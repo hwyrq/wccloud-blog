@@ -1,12 +1,19 @@
 //! author wcz
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
-use actix_multipart::Multipart;
 
+use actix_multipart::Multipart;
 use actix_web::{get, post, Responder, web};
+use futures_util::{StreamExt, TryStreamExt};
+use minio::s3::args::{BucketExistsArgs, CompleteMultipartUploadArgs, CreateMultipartUploadArgs, MakeBucketArgs, UploadPartArgs};
+use minio::s3::client::Client;
+use minio::s3::creds::StaticProvider;
+use minio::s3::http::BaseUrl;
+use minio::s3::types::Part;
 
 use crate::application;
 use crate::controller::vo::web_blog_vo::WebBlogPageReqVO;
+use crate::infrastructure::config::get_config_value;
 use crate::infrastructure::util::result::{ResultVO, SuccessData};
 
 #[get("/anonymous/blog/page")]
@@ -29,21 +36,12 @@ pub async fn label(_item: web::Query<HashMap<String, String>>) -> impl Responder
     return application::anonymous_blog_service::label().await;
 }
 
-use futures_util::{StreamExt, TryStreamExt};
-use minio::s3::args::{BucketExistsArgs, CompleteMultipartUploadArgs, ComposeObjectArgs, CreateMultipartUploadArgs, MakeBucketArgs, UploadObjectArgs, UploadPartArgs, UploadPartCopyArgs};
-use minio::s3::client::Client;
-use minio::s3::creds::StaticProvider;
-use minio::s3::http::BaseUrl;
-use minio::s3::types::Part;
-use minio::s3::utils::Multimap;
-use crate::infrastructure::util::constant::{MINIO_ACCESS_KEY, MINIO_SECRET_KEY};
-
 #[post("/file/upload")]
 pub async fn upload(mut arg: Multipart) -> impl Responder {
-    let base_url = "http://home0122:9000".parse::<BaseUrl>().unwrap();
-    let static_provider = StaticProvider::new(&**MINIO_ACCESS_KEY, &**MINIO_SECRET_KEY, None);
+    let base_url = get_config_value::<String>("minio.url").parse::<BaseUrl>().unwrap();
+    let bucket_name:String = get_config_value("minio.bucket-name");
+    let static_provider = StaticProvider::new(get_config_value::<String>("minio.access-key"), get_config_value::<String>("minio.secret-key"), None);
     let client = Client::new(base_url.clone(), Some(Box::new(static_provider)), None, Some(true)).unwrap();
-    let bucket_name = "wccloud";
     let exists = client.bucket_exists(&BucketExistsArgs::new(&bucket_name).unwrap()).await.unwrap();
     if !exists { client.make_bucket(&MakeBucketArgs::new(&bucket_name).unwrap()).await.unwrap(); }
     let mut url = vec![];
@@ -54,7 +52,7 @@ pub async fn upload(mut arg: Multipart) -> impl Responder {
 
         let response = client.create_multipart_upload_old(&CreateMultipartUploadArgs::new(&bucket_name, &*filename).unwrap()).await.unwrap();
         let mut vec1: Vec<u8> = vec![];
-        let mut num = 1;
+        let  num = 1;
         let mut parts: Vec<Part> = Vec::new();
         while let Some(Ok(b)) = field.next().await {
             let mut vec2 = b.to_vec();

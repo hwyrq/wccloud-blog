@@ -7,8 +7,8 @@
   },
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev-admin": "nuxt dev --port 8001 --host 127.0.0.1",
+    "build": "nuxt build --dotenv .env.pro",
+    "dev-admin": "nuxt dev --port 8001 --host 127.0.0.1 --dotenv .env.dev",
     "generate": "nuxt generate --port 8001",
     "preview": "nuxt preview --port 8001",
     "postinstall": "nuxt prepare"

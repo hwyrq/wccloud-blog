@@ -11,4 +11,5 @@ COPY cargo /usr/local/cargo
 COPY target /wccloud-web-rust/target
 
 RUN cargo build --release
+COPY application-pro.yml /wccloud-web-rust/target/release/application.yml
 CMD ./target/release/wccloud-web-rust

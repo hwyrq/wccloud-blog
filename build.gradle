@@ -76,11 +76,11 @@ subprojects {
         implementation 'org.hibernate:hibernate-validator:8.0.1.Final'
 
         implementation 'org.springframework.cloud:spring-cloud-starter'
-//        implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+        implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
         implementation 'com.alibaba.cloud:spring-cloud-alibaba-dependencies:2022.0.0.0'
         implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:2022.0.0.0'
-//        implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:2022.0.0.0'
+        implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:2022.0.0.0'
 
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'

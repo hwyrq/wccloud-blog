@@ -7,8 +7,8 @@
     "url": "http://wccloud.top"
   },
   "scripts": {
-    "build": "nuxt build",
-    "dev-web": "nuxt dev --port 8000 --host 127.0.0.1",
+    "build": "nuxt build --dotenv .env.pro",
+    "dev-web": "nuxt dev --port 8000 --host 127.0.0.1 --dotenv .env.dev",
     "generate": "nuxt generate --port 8000",
     "preview": "nuxt preview --port 8000",
     "postinstall": "nuxt prepare"

@@ -1,0 +1,18 @@
+server:
+  port: 8082
+spring:
+  main:
+    allow-circular-references: true
+  application:
+    name: wccloud-auth-server
+  cloud:
+    nacos:
+      server-addr: home0122:8848
+      username: nacos
+      password: nacos
+      discovery:
+        namespace: wccloud-dev
+      config:
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        shared-configs:
+          - data-id: wccloud-shared.yaml

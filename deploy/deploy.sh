@@ -19,7 +19,7 @@ package(){
 works=$(git log -1 --stat |awk -F ' ' '{print $1}' |awk -F '/' '{print $1}' | awk '$0="#"$0"#"')
 
 #手动修改这里，临时重新部署某一个
-#works='#wccloud-admin# #wccloud-auth# #wccloud-gateway# #wccloud-web-rust# #nuxt_admin# #nuxt_web# '
+works='#wccloud-admin# #wccloud-auth# #wccloud-gateway# #wccloud-web-rust# #nuxt_admin# #nuxt_web# '
 echo "works: "
 echo $works
 #java

@@ -1,8 +1,8 @@
 server:
-  port: 8084
+  port: 8085
 spring:
   application:
-    name: wccloud-admin-server
+    name: wccloud-web-rust
   cloud:
     nacos:
       server-addr: home0122:8848
@@ -12,5 +12,6 @@ spring:
         namespace: wccloud-dev
       config:
         namespace: ${spring.cloud.nacos.discovery.namespace}
-        shared-configs:
-          - data-id: wccloud-shared.yaml
+        name: wccloud-shared
+        file-extension: yaml
+

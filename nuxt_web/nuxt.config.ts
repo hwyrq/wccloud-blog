@@ -14,7 +14,6 @@ export default defineNuxtConfig({
   runtimeConfig:{
     public: {
       a_target: "_self",
-      basePATH: "http://wccloud.top"
     },
 
   },

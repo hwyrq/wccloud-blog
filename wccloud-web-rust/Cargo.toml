@@ -36,7 +36,9 @@ xor-str="*"
 
 minio= {git = "https://gitee.com/hwyrq/minio-rs.git" }
 futures-util = "0.3.30"
-
+futures-executor="*"
 rs-snowflake = "*"
 rand = { version = "0.8.5", features = [] }
 http = "0.2.12"
+config  ="*"
+get_local_info  ="*"

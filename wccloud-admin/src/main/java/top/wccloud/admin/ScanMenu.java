@@ -27,7 +27,7 @@ import java.util.List;
  * 基于controller自动扫描添加菜单
  * @author wcz
  */
-@Component
+//@Component
 public class ScanMenu {
 
     @Resource
