@@ -13,7 +13,7 @@
       </nuxt-layout>
     </el-container>
     <el-footer>
-      Copyright <a href=""> {{ siteInfo.name }}</a>
+      Copyright <a href="http://wccloud.top/"> {{ siteInfo.name }}</a>
       <a href="https://beian.miit.gov.cn/" target="_blank">{{ siteInfo.recordNum }}</a>
       <a href="https://beian.mps.gov.cn/#/query/webSearch?code=34019202002289" rel="noreferrer" target="_blank">皖公网安备34019202002289</a>
     </el-footer>
@@ -29,7 +29,7 @@ const siteInfo = ref({
   name: "wccloud",
   title: "wccloud",
   summary: "一个专注于技术分享的博客平台，大家以共同学习，乐于分享，拥抱开源的价值观进行学习交流",
-  keyword: "IT社区,技术社区,Java技术分享,Spring教程,开发者社区,Rust,五彩祥云",
+  keyword: "IT社区,技术社区,Java技术分享,Spring教程,开发者社区,Rust",
   author: "MR.WANG",
   recordNum: "皖ICP备2024037398号-1",
   email: "hwyrqw@163.com",
