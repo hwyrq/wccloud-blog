@@ -1,7 +1,7 @@
 
 <template>
     <el-card style="width: 800px;" shadow="hover">
-      <el-carousel style="width: 800px;height: 450px;" autoplay>
+      <el-carousel style="width: 800px;height: 450px;" autoplay :interval="2000" :motion-blur="true" :pause-on-hover="pause_on_hover">
         <el-carousel-item style="width: 800px;height: 450px;cursor: pointer" v-for="(item,index) in dataList" :key="index" >
           <a :href="'/info/'+item.blogId" target="_self">
             <img
@@ -26,10 +26,19 @@
 import {useAsyncData} from "#app";
 import {level} from "~/api";
 
+const pause_on_hover = ref(false);
 const dataList = ref();//[{title: ''}],
  useAsyncData(() => level({level: 1}).then(response => {
    dataList.value = response.data;
+
 }));
+ onMounted(()=>{
+   setTimeout(() => {
+     //解决首次加载页面后不会自动轮播的问题，这样既能保证轮播正常，也能保证悬停鼠标暂停轮播
+     pause_on_hover.value = true;
+   }, 1000);
+
+ })
 
 </script>
 
