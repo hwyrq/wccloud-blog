@@ -67,6 +67,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => 
   imageUrl.value = URL.createObjectURL(uploadFile.raw!);
   if (response.data != null) {
     resultUrl.value = response.data[0];
+    ElMessage.success('上传成功');
   }
 }
 
@@ -76,6 +77,7 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
     ElMessage.error('图片大小不能超过 5MB!')
     return false
   }
+  ElMessage.info('上传中...');
   return true
 }
 
