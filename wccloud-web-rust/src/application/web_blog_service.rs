@@ -1,4 +1,6 @@
 //! author wcz
+use actix_web::HttpRequest;
+use chrono::Local;
 use redis::{AsyncCommands, RedisResult};
 use sea_orm::{ActiveModelTrait, ConnectionTrait, EntityTrait, FromQueryResult, IntoActiveModel, Statement};
 use sea_orm::DatabaseBackend::MySql;
@@ -11,6 +13,7 @@ use crate::infrastructure::config::sea_config::master;
 use crate::infrastructure::config::snow_flake_config;
 use crate::infrastructure::dao::entity::{web_blog, web_blog_label, web_label, web_type};
 use crate::infrastructure::dao::entity::prelude::{WebBlog, WebBlogLabel, WebLabel, WebType};
+use crate::infrastructure::dao::entity::web_blog::Column;
 use crate::infrastructure::dao::web_blog_dao::{get_count, get_page_list};
 use crate::infrastructure::util::result::{PageResultVO, ResultVO, SuccessData};
 
@@ -31,10 +34,14 @@ pub async fn  page(req_vo: &WebBlogPageReqVO) -> ResultVO<PageResultVO<WebBlogPa
     return ResultVO::success(page_result_vo);
 }
 
-pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
+pub async fn save(arg: &WebBlogSaveReqVO, http_request: &HttpRequest) ->ResultVO<bool>{
     let mut type_id = snow_flake_config::next_id();
     let mut blog_id = snow_flake_config::next_id();
-
+    let user_id = redis_master().await.get::<&str,i64>(
+        &*("accessToken:".to_string() + http_request.headers().get("token").unwrap().to_str().unwrap())
+    ).await.unwrap();
+    //获取用户信息
+    
     match arg.clone().blog_id {
         None => {}
         Some(_) => {//删除
@@ -53,9 +60,9 @@ pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
             let active_model = web_type::Model {
                 type_id,
                 type_name: arg.type_name.to_string(),
-                create_user_id: 1,
-                create_time: DateTime::default(),
-                update_user_id: 1,
+                create_user_id: user_id.clone(),
+                create_time: Local::now().naive_local(),
+                update_user_id: user_id.clone(),
                 update_time: DateTime::default(),
                 deleted: 0,
             }.into_active_model();
@@ -94,10 +101,10 @@ pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
             let result = WebLabel::insert(web_label::Model {
                 label_id: snow_flake_config::next_id(),
                 label_name: label_name.to_string(),
-                create_user_id: 0,
-                create_time: DateTime::default(),
-                update_user_id: 0,
-                update_time: DateTime::default(),
+                create_user_id: user_id.clone(),
+                create_time: Local::now().naive_local(),
+                update_user_id: user_id.clone(),
+                update_time: Local::now().naive_local(),
                 deleted: 0,
             }.into_active_model()).exec(master()).await.unwrap();
             //新增关系
@@ -117,7 +124,7 @@ pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
     }
 
 
-    let model = web_blog::Model {
+    let mut model = web_blog::Model {
         blog_id,
         title: arg.title.clone(),
         summary: (arg.summary).parse().unwrap(),
@@ -134,17 +141,33 @@ pub async fn save(arg: &WebBlogSaveReqVO) ->ResultVO<bool>{
             None => {"".to_string()}
             Some(v) => {v.to_string()}
         },
-        create_user_id: 0,
-        create_time: DateTime::default(),
-        update_user_id: 0,
-        update_time: DateTime::default(),
+        create_user_id: user_id.clone(),
+        create_time: Local::now().naive_local(),
+        update_user_id: user_id.clone(),
+        update_time: Local::now().naive_local(),
         deleted: 0,
     }.into_active_model();
 
     match arg.clone().blog_id {
         None => { WebBlog::insert(model).exec(master()).await.unwrap(); }
         Some(_i) => {
-            model.reset_all().update(master()).await.unwrap();
+            model.reset(Column::BlogId);
+            model.reset(Column::Title);
+            model.reset(Column::Summary);
+            model.reset(Column::TypeId);
+            model.reset(Column::Level);
+            model.reset(Column::EnableComment);
+            model.reset(Column::Status);
+            model.reset(Column::Html);
+            model.reset(Column::Md);
+            model.reset(Column::ImgUrl);
+            // model.reset(Column::CreateUserId);
+            // model.reset(Column::CreateTime);
+            model.reset(Column::UpdateUserId);
+            model.reset(Column::UpdateTime);
+            model.reset(Column::Deleted);
+            
+            model.update(master()).await.unwrap();
         }
     }
     //更新下type和label表，自动删除掉未引用的，就懒得做这两个的管理了，

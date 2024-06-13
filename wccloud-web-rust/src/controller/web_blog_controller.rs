@@ -1,7 +1,7 @@
 //! author wcz
 use std::collections::HashMap;
 
-use actix_web::{delete, get, post, Responder, web};
+use actix_web::{delete, get, HttpRequest, post, Responder, web};
 
 use crate::application;
 use crate::controller::vo::web_blog_vo::{WebBlogPageReqVO, WebBlogSaveReqVO};
@@ -13,8 +13,8 @@ pub async fn page(item: web::Query<WebBlogPageReqVO>) -> impl Responder {
 }
 
 #[post("/blog/save")]
-pub async fn save(item: web::Json<WebBlogSaveReqVO>) -> impl Responder {
-    return application::web_blog_service::save(&item.into_inner()).await;
+pub async fn save(item: web::Json<WebBlogSaveReqVO>,http_request: HttpRequest) -> impl Responder {
+    return application::web_blog_service::save(&item.into_inner(),&http_request).await;
 }
 
 #[get("/blog/one")]
