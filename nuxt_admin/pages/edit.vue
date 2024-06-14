@@ -53,6 +53,7 @@
 
   </el-form>
 <div id="vditor" :style="vdStyle"></div>
+<div id="preview" style="display: none" ></div>
 </template>
 <script setup lang="ts">
 /**
@@ -82,8 +83,13 @@ let vdStyle = ref({height: "0px"});
 onMounted(async () => {
 
   localStorage.setItem("vditorvditor","");
+  let item = localStorage.getItem("vditorvditor-mode");
+  if (item == null || item == "") {
+    item = "wysiwyg";
+  }
   vd = new Vditor('vditor', {
     placeholder: '正文......',
+    mode: item,
     counter: {enable: true, type: 'markdown'},
     upload:{
       url:request.defaults.baseURL+ "/wccloud-web-rust/file/upload",
@@ -133,10 +139,22 @@ onMounted(async () => {
 });
 
 const saveHandler = async function () {
+  //首先保存一下编辑模式，以便下次切换
+ localStorage.setItem("vditorvditor-mode",vd.getCurrentMode());
   await formRef.value.validate(async (valid, fields) => {
     if (valid) {
-      form.value.html = vd?.getHTML();
-      form.value.md = vd?.getValue();
+      const previewElement = document.getElementById('preview');
+      await Vditor.preview(previewElement,<string>vd?.getValue(), {
+        mode: "dark",
+        hljs: {style: "dracula"},
+        markdown: {toc: true,mark:true},
+        speech: {
+          enable: true,
+        },
+
+      });
+      form.value.html = previewElement.innerHTML ;
+      form.value.md = <string>vd?.getValue();
       form.value.imgUrl = uploadRef.value.url;
       let data = await save(form.value);
       if (data.code == 0) {
