@@ -1,11 +1,11 @@
 <template>
   <h1 style="display: none">{{siteInfo.summary}}</h1>
   <el-container style="min-height: 1200px;background-color: #eeeeee;align-self: center;">
-    <el-affix>
+<!--    <el-affix>-->
       <el-header style="padding: 0">
         <Header :siteInfo="siteInfo"/>
       </el-header>
-    </el-affix>
+<!--    </el-affix>-->
 
     <el-container style="background-color: #eeeeee;align-self: center;">
       <nuxt-layout >
