@@ -4,7 +4,7 @@ import jsonBig from "json-bigint";
 const requester = axios.create({
     // baseURL: process.env.BASE_URL,
     // baseURL: "http://home0122:8081",
-    baseURL: 'http://wccloud.top',
+    baseURL: 'http://wccloud.top/gateway',
     timeout: 15000,
     transformResponse: data => {
         try{
