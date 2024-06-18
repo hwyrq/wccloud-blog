@@ -16,6 +16,7 @@ export default defineNuxtConfig({
   runtimeConfig:{
     public: {
       a_target: "_self",
+      baseUrl: process.env.BASE_URL,
     },
 
   },

@@ -1,19 +1,17 @@
-
 import axios from 'axios'
 import type {Action} from "element-plus";
 import jsonBig from "json-bigint";
+
 /**
  * @author wcz
  */
 const requester = axios.create({
-    // baseURL: process.env.BASE_URL,
-    // baseURL: "http://home0122:8081",
-    baseURL: 'http://wccloud.top/gateway',
+    baseURL: process.env.BASE_URL || useRuntimeConfig().public.baseUrl,
     timeout: 15000,
     transformResponse: data => {
-        try{
+        try {
             return jsonBig({"storeAsString": true}).parse(data);
-        }catch (err) {
+        } catch (err) {
             console.log(err);
             return JSON.parse(data)
         }

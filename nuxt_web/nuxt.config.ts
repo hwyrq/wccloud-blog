@@ -11,12 +11,14 @@ export default defineNuxtConfig({
 /*  routeRules:{
     "/":{prerender: true }
   }*/
+
   runtimeConfig:{
     public: {
       a_target: "_self",
+      baseUrl: process.env.BASE_URL,
     },
-
   },
+
   vite: {
     optimizeDeps: {
       include: ['dayjs', 'dayjs/plugin/*', 'element-plus']
