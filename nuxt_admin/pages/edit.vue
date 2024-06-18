@@ -53,7 +53,6 @@
 
   </el-form>
 <div id="vditor" :style="vdStyle"></div>
-<div id="preview" style="display: none" ></div>
 </template>
 <script setup lang="ts">
 /**
@@ -143,17 +142,7 @@ const saveHandler = async function () {
  localStorage.setItem("vditorvditor-mode",vd.getCurrentMode());
   await formRef.value.validate(async (valid, fields) => {
     if (valid) {
-      const previewElement = document.getElementById('preview');
-      await Vditor.preview(previewElement,<string>vd?.getValue(), {
-        mode: "dark",
-        hljs: {style: "dracula"},
-        markdown: {toc: true,mark:true},
-        speech: {
-          enable: true,
-        },
-
-      });
-      form.value.html = previewElement.innerHTML ;
+      form.value.html = <string>vd?.getHTML();
       form.value.md = <string>vd?.getValue();
       form.value.imgUrl = uploadRef.value.url;
       let data = await save(form.value);

@@ -58,7 +58,8 @@ if [ "$(echo $works|grep '#wccloud-web-rust#')" != "" ]; then
   echo '##########开始构建wccloud-web-rust##########'
   cd ..
   cd wccloud-web-rust || exit
-  #/root/.cargo/bin/cargo  build --release
+  #jenkins内不能直接用cargo命令，所以这里就这样吧
+  /root/.cargo/bin/cargo  build --release
   if [ "$(docker ps|grep wccloud-web-rust)" != "" ]; then
     echo  'stop rm rmi '
    docker stop wccloud-web-rust && docker rm wccloud-web-rust && docker rmi wccloud-web-rust
@@ -66,9 +67,6 @@ if [ "$(echo $works|grep '#wccloud-web-rust#')" != "" ]; then
   cd ..
   cd deploy || exit
   docker compose -f wccloud-web-rust.yml up -d
-  #将docker内构建的依赖以及缓存复制到 jenkins内的项目目录，提升下次编译速度
-  docker cp  wccloud-web-rust:/usr/local/cargo /var/jenkins_home/workspace/wccloud/wccloud-web-rust/
-  docker cp  wccloud-web-rust:/wccloud-web-rust/target /var/jenkins_home/workspace/wccloud/wccloud-web-rust/
 fi
 
 #node
