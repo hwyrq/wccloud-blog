@@ -1,199 +1,80 @@
 //! author wcz
 use actix_web::HttpRequest;
-use chrono::Local;
 use redis::{AsyncCommands, RedisResult};
-use sea_orm::{ActiveModelTrait, ConnectionTrait, EntityTrait, FromQueryResult, IntoActiveModel, Statement};
+use sea_orm::{ ConnectionTrait, EntityTrait, FromQueryResult, Statement, TransactionTrait};
 use sea_orm::DatabaseBackend::MySql;
-use sea_orm::prelude::DateTime;
 use tokio::join;
 
 use crate::controller::vo::web_blog_vo::{WebBlogOneRespVO, WebBlogPageReqVO, WebBlogPageRespVO, WebBlogSaveReqVO};
+use crate::domain::{web_label_repository, web_type_repository};
 use crate::infrastructure::config::redis_config::{cache_hash_key, cache_hash_key_field, redis_master};
 use crate::infrastructure::config::sea_config::master;
 use crate::infrastructure::config::snow_flake_config;
-use crate::infrastructure::dao::entity::{web_blog, web_blog_label, web_label, web_type};
-use crate::infrastructure::dao::entity::prelude::{WebBlog, WebBlogLabel, WebLabel, WebType};
-use crate::infrastructure::dao::entity::web_blog::Column;
+use crate::infrastructure::dao::{web_blog_dao, web_label_dao, web_type_dao};
+use crate::infrastructure::dao::entity::{web_label, web_type};
+use crate::infrastructure::dao::entity::prelude::WebBlog;
 use crate::infrastructure::dao::web_blog_dao::{get_count, get_page_list};
 use crate::infrastructure::util::result::{PageResultVO, ResultVO, SuccessData};
 
-pub async fn  page(req_vo: &WebBlogPageReqVO) -> ResultVO<PageResultVO<WebBlogPageRespVO>> {
-
-    let (key,field) = cache_hash_key_field(&page, &req_vo);
+pub async fn page(req_vo: &WebBlogPageReqVO) -> ResultVO<PageResultVO<WebBlogPageRespVO>> {
+    let (key, field) = cache_hash_key_field(&page, &req_vo);
 
     let x: RedisResult<PageResultVO<WebBlogPageRespVO>> = redis_master().await.hget(&key, &field).await;
     match x {
-        Ok(x) => {return ResultVO::success(x)}
+        Ok(x) => { return ResultVO::success(x); }
         Err(_) => {}
     }
     //异步执行，两个SQL一起执行，节省一半执行时间，nice
-    let (list,count) = join!(get_page_list(&req_vo), get_count(&req_vo));
+    let (list, count) = join!(get_page_list(&req_vo), get_count(&req_vo));
 
     let page_result_vo = PageResultVO::new(list, count);
-    redis_master().await.hset::<&String,&String,String,i64>(&key, &field, serde_json::to_string_pretty(&page_result_vo).unwrap()).await.unwrap();
+    redis_master().await.hset::<&String, &String, String, i64>(&key, &field, serde_json::to_string_pretty(&page_result_vo).unwrap()).await.unwrap();
     return ResultVO::success(page_result_vo);
 }
 
-pub async fn save(arg: &WebBlogSaveReqVO, http_request: &HttpRequest) ->ResultVO<bool>{
+pub async fn save(arg: &WebBlogSaveReqVO, http_request: &HttpRequest) -> ResultVO<bool> {
     let mut type_id = snow_flake_config::next_id();
     let mut blog_id = snow_flake_config::next_id();
-    let user_id = redis_master().await.get::<&str,i64>(
+    let user_id = redis_master().await.get::<&str, i64>(
         &*("accessToken:".to_string() + http_request.headers().get("token").unwrap().to_str().unwrap())
     ).await.unwrap();
     //获取用户信息
-    
-    match arg.clone().blog_id {
+    //根据前端传参，判断是新增还是更新
+    match arg.blog_id {
         None => {}
-        Some(_) => {//删除
-            blog_id = arg.clone().blog_id.unwrap().parse().unwrap();
-            let sql = "delete from web_blog_label where blog_id = ? ".to_string();
-            master().execute(Statement::from_sql_and_values(MySql, sql, [sea_orm::Value::BigInt(Some(blog_id))])).await.unwrap();
+        Some(_) => {
+            blog_id = arg.blog_id.as_ref().unwrap().parse().unwrap();
         }
     }
-    //判断当前type是否存在
-    let value = sea_orm::Value::from(arg.type_name.to_string());
-    let option_web_tpe = WebType::find().from_raw_sql(Statement::from_sql_and_values(
-        MySql, "select*from web_type where type_name = ? ",
-        [value.clone()])).one(master()).await.unwrap();
-    match option_web_tpe {
-        None => {
-            let active_model = web_type::Model {
-                type_id,
-                type_name: arg.type_name.to_string(),
-                create_user_id: user_id.clone(),
-                create_time: Local::now().naive_local(),
-                update_user_id: user_id.clone(),
-                update_time: DateTime::default(),
-                deleted: 0,
-            }.into_active_model();
+    //开启事务
+    //rust如果也有类似springboot的框架就好了，就不用手写事务了
+    let transaction = master().begin().await.unwrap();
 
-            WebType::insert(active_model).exec(master()).await.unwrap();
-        }
-        Some(model) => {
-            type_id = model.type_id;
-            //并吧deleted设置为0
-            let _ = master().execute(Statement::from_sql_and_values(
-                MySql, "update web_type set deleted = 0 where type_id = ? ", [value])).await;
-
-        }
-    }
-    //判断当前lebel是否存在
-    let mut sql = "".to_string();
-    let mut vec = vec![];
-    for str in &arg.label_name {
-        sql = sql + "?,";
-        vec.insert(0, sea_orm::Value::from(str));
-    }
-    sql.remove(sql.len() - 1);
-    let select_sql = format!("select*from web_label where label_name in({})", sql);
-    let vec_web_label = WebLabel::find().from_raw_sql(Statement::from_sql_and_values(MySql, select_sql, vec.clone())).all(master()).await.unwrap();
-    //并吧deleted设置为0
-    let _ = master().execute(Statement::from_sql_and_values(
-        MySql, format!("update web_label set deleted = 0 where label_name  in ({})", sql), vec)).await;
-    let mut contains_name = vec![];
-    //先把不存在的找出来，并新建
-    for model in &vec_web_label {
-        contains_name.insert(0, &model.label_name);
-    }
-    for label_name in &arg.label_name {
-        if !contains_name.contains(&label_name) {
-            //不包含，则新增
-            let result = WebLabel::insert(web_label::Model {
-                label_id: snow_flake_config::next_id(),
-                label_name: label_name.to_string(),
-                create_user_id: user_id.clone(),
-                create_time: Local::now().naive_local(),
-                update_user_id: user_id.clone(),
-                update_time: Local::now().naive_local(),
-                deleted: 0,
-            }.into_active_model()).exec(master()).await.unwrap();
-            //新增关系
-            WebBlogLabel::insert(web_blog_label::Model {
-                blog_id,
-                label_id: result.last_insert_id,
-            }.into_active_model()).exec(master()).await.unwrap();
-        };
-    }
-    //已包含，则新增关系
-    for model in &vec_web_label {
-        //新增关系
-        WebBlogLabel::insert(web_blog_label::Model {
-            blog_id,
-            label_id: model.label_id,
-        }.into_active_model()).exec(master()).await.unwrap();
-    }
-
-
-    let mut model = web_blog::Model {
-        blog_id,
-        title: arg.title.clone(),
-        summary: (arg.summary).parse().unwrap(),
-        type_id,
-        level: arg.level,
-        enable_comment: match arg.enable_comment {
-            true => { 1 }
-            false => { 0 }
-        },
-        status: arg.status,
-        html: (arg.html).parse().unwrap(),
-        md: (arg.md).parse().unwrap(),
-        img_url: match &arg.img_url {
-            None => {"".to_string()}
-            Some(v) => {v.to_string()}
-        },
-        create_user_id: user_id.clone(),
-        create_time: Local::now().naive_local(),
-        update_user_id: user_id.clone(),
-        update_time: Local::now().naive_local(),
-        deleted: 0,
-    }.into_active_model();
-
-    match arg.clone().blog_id {
-        None => { WebBlog::insert(model).exec(master()).await.unwrap(); }
-        Some(_i) => {
-            model.reset(Column::BlogId);
-            model.reset(Column::Title);
-            model.reset(Column::Summary);
-            model.reset(Column::TypeId);
-            model.reset(Column::Level);
-            model.reset(Column::EnableComment);
-            model.reset(Column::Status);
-            model.reset(Column::Html);
-            model.reset(Column::Md);
-            model.reset(Column::ImgUrl);
-            // model.reset(Column::CreateUserId);
-            // model.reset(Column::CreateTime);
-            model.reset(Column::UpdateUserId);
-            model.reset(Column::UpdateTime);
-            model.reset(Column::Deleted);
-            
-            model.update(master()).await.unwrap();
-        }
-    }
-    //更新下type和label表，自动删除掉未引用的，就懒得做这两个的管理了，
+    //异步的魅力，
+    join!(
+       //判断并新增type;rust牛逼呀，type_id在这个方法内变更后，那么外部方法体的值就变更了，java就不行，return恶心人，或者得包装成bean
+    web_type_repository::process_type(arg,&mut type_id, user_id,&transaction),
+    //判断并新增label新增关系
+    web_label_repository::process_label(&arg, blog_id, user_id,&transaction)
+    );
+    //保存或更新博客
+    web_blog_dao::save_or_update_blog(arg.clone(), &mut type_id, &mut blog_id, user_id, &transaction).await;
+    join!(
+         //更新下type和label表，自动删除掉未引用的，就懒得做这两个的管理了，
     //not in ，嗯，别喷，后期给type和label正名，做可视化管理
-    async fn update1() {
-        master().execute(Statement::from_sql_and_values(
-            MySql, "update web_type set deleted = 1 where type_id not in \
-        (select distinct type_id from web_blog where deleted = 0)", [])).await.expect("TODO: panic message")
-        ;
-    }
-    async fn update2() {
-        master().execute(Statement::from_sql_and_values(
-            MySql, "update web_label set deleted = 1 where label_id not in
-        (select distinct label_id from web_blog_label a
-        join web_blog b on a.blog_id = b.blog_id where b.deleted = 0 )", [])).await.expect("TODO: panic message")
-        ;
-    }
-    join!(update1(),update2());
-
-    redis_master().await.del::<String,i64>(cache_hash_key(&page)).await.unwrap();
-    redis_master().await.del::<String,i64>(cache_hash_key(&crate::application::anonymous_blog_service::page)).await.unwrap();
+        web_type_dao::delete_unused_type(&transaction),
+        web_label_dao::delete_unused_label(&transaction),
+    );
+    transaction.commit().await.unwrap();
+    let mut connection = redis_master().await;
+    connection.del::<String, i64>(cache_hash_key(&page)).await.unwrap();
+    connection.del::<String, i64>(cache_hash_key(&crate::application::anonymous_blog_service::page)).await.unwrap();
 
     return ResultVO::success(true);
 }
 
-pub async fn one(blog_id:i64) -> ResultVO<WebBlogOneRespVO> {
+
+pub async fn one(blog_id: i64) -> ResultVO<WebBlogOneRespVO> {
     let option = WebBlog::find_by_id(blog_id).one(master()).await.unwrap().unwrap();
     let sql = "select b.* from web_blog_label a join web_label b on a.label_id = b.label_id where a.blog_id = ? ".to_string();
     let vec = web_label::Model::find_by_statement(Statement::from_sql_and_values(MySql, sql, [sea_orm::Value::BigInt(Some(blog_id))])).all(master()).await.unwrap();
@@ -219,13 +100,12 @@ pub async fn one(blog_id:i64) -> ResultVO<WebBlogOneRespVO> {
     });
 }
 
-pub async  fn delete(blog_id: i64)->ResultVO<bool>{
+pub async fn delete(blog_id: i64) -> ResultVO<bool> {
     let _ = master().execute(Statement::from_sql_and_values(
-        MySql,"update web_blog set deleted = 1 where blog_id = ? ",
+        MySql, "update web_blog set deleted = 1 where blog_id = ? ",
         [sea_orm::Value::BigInt(Some(blog_id))])).await.unwrap();
-    redis_master().await.del::<String,i64>(cache_hash_key(&page)).await.unwrap();
-    redis_master().await.del::<String,i64>(cache_hash_key(&crate::application::anonymous_blog_service::page)).await.unwrap();
+    redis_master().await.del::<String, i64>(cache_hash_key(&page)).await.unwrap();
+    redis_master().await.del::<String, i64>(cache_hash_key(&crate::application::anonymous_blog_service::page)).await.unwrap();
 
     return ResultVO::success(true);
-
 }

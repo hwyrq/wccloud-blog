@@ -25,7 +25,7 @@ pub async fn page(item: web::Query<WebBlogPageReqVO>) -> impl Responder {
 
 #[get("/anonymous/blog/one")]
 pub async fn one(item: web::Query<HashMap<String, i64>>) -> impl Responder {
-    return application::anonymous_blog_service::one(*item.get("blogId").unwrap()).await;
+    return application::web_blog_service::one(*item.get("blogId").unwrap()).await;
 }
 
 #[get("/anonymous/blog/level")]
