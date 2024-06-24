@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   devtools: {enabled: true},
   modules: [
     '@element-plus/nuxt',
+    "@nuxtjs/sitemap",
   ],
   css: [
     'element-plus/dist/index.css',
@@ -11,7 +12,9 @@ export default defineNuxtConfig({
 /*  routeRules:{
     "/":{prerender: true }
   }*/
-
+/*  app: {
+    baseURL:"/web",
+  },*/
   runtimeConfig:{
     public: {
       a_target: "_self",

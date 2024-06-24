@@ -1,4 +1,4 @@
-FROM node:latest
+FROM registry.cn-shanghai.aliyuncs.com/hwyrq/node
 ADD .output /.output
 ADD ecosystem.config.js /ecosystem.config.js
 EXPOSE 8001

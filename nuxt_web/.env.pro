@@ -1,1 +1,1 @@
-BASE_URL='http://wccloud.top/gateway'
+BASE_URL='http://www.wccloud.top/gateway'
