@@ -51,8 +51,8 @@ pub async fn init_nacos() {
         .server_addr(server_addr)
         .namespace(namespace)
         .app_name(service_name.clone())
-        .auth_username(auth_username)
-        .auth_password(auth_password);
+        /*.auth_username(auth_username)
+        .auth_password(auth_password)*/;
     log::info!("{:?}",&client_props);
     //config
     let config_server = ConfigServiceBuilder::new(
@@ -66,12 +66,18 @@ pub async fn init_nacos() {
     match config_resp {
         Ok(config_resp) => {
             arc.notify(config_resp);
+            listener(service_name, data_id, arc, client_props, config_server);
         }
         Err(err) => {
-            tracing::error!("get the config {:?}",err)
+            tracing::error!("get the config {:?}",err);
         }
     }
 
+
+
+}
+
+fn listener(service_name: String, data_id: String, arc: Arc<MyConfigChangeListener>, client_props: ClientProps, config_server: impl ConfigService + Sized) {
     let _listen = config_server.add_listener(
         data_id,
         constants::DEFAULT_GROUP.into(),
@@ -103,6 +109,4 @@ pub async fn init_nacos() {
         Some(constants::DEFAULT_GROUP.to_string()),
         vec![server_instance]
     );
-
-
 }

@@ -1,13 +1,13 @@
 //! author wcz
 
 use std::any::type_name_of_val;
-
+use std::time::Duration;
 use redis::aio::MultiplexedConnection;
 use redis::Client;
 use redis_pool::connection::RedisPoolConnection;
 use redis_pool::RedisPool;
 use serde::Serialize;
-
+use tokio::time::sleep;
 use crate::infrastructure::config::get_config_value;
 
 static  mut CON : Option<RedisPool<Client, MultiplexedConnection>> = None;
@@ -22,9 +22,20 @@ pub async  fn init_redis() {
     let url = format!("redis://:{}@{}:{}/", password, host, port);
     log::info!("{}",url);
 
-    let client = Client::open(url).unwrap();
-    let pool = RedisPool::from(client);
-    unsafe { CON = Some(pool) }
+    let open = Client::open(url);
+    match open.is_ok() {
+        true => {
+            let client = open.unwrap();
+            let pool = RedisPool::from(client);
+            unsafe { CON = Some(pool) }
+        }
+        false => {
+            sleep(Duration::from_secs(5)).await;
+            Box::pin(init_redis()).await;
+            return;
+        }
+    }
+    
 }
 
 pub async   fn redis_master() -> RedisPoolConnection<MultiplexedConnection> {

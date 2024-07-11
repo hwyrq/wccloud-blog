@@ -58,6 +58,7 @@ public class SecurityConfig {
             exchangeSpec.pathMatchers("/*/webjars/**").permitAll();
             exchangeSpec.pathMatchers("/*/auth/**").permitAll();
             exchangeSpec.pathMatchers("/*/test/a").permitAll();
+            exchangeSpec.pathMatchers("/actuator/health").permitAll();
 //            exchangeSpec.pathMatchers("/**").permitAll();
 //            exchangeSpec.pathMatchers("/*/wccloud-auth/test/a").permitAll();
             exchangeSpec.pathMatchers("/**").access(new ReactiveAuthorizationManager<AuthorizationContext>() {

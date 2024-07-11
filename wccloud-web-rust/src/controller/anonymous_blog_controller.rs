@@ -78,11 +78,16 @@ pub async fn upload(mut arg: Multipart,http_request: HttpRequest) -> impl Respon
     }
     return ResultVO::success(url);
 }
-
+#[get("/anonymous/actuator/health")]
+pub async fn health(_item: web::Query<HashMap<String, String>>) -> impl Responder {
+    return "UP";
+}
 pub fn anonymous_blog_controller(cfg: &mut web::ServiceConfig) {
     cfg.service(page)
         .service(one)
         .service(level)
         .service(label)
-        .service(upload);
+        .service(upload)
+        .service(health)
+    ;
 }

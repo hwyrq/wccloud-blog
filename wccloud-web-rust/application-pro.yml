@@ -5,7 +5,7 @@ spring:
     name: wccloud-web-rust
   cloud:
     nacos:
-      server-addr: home0122:8848
+      server-addr: 10.96.3.1:8848
       username: nacos
       password: nacos
       discovery:

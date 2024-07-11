@@ -1,11 +1,13 @@
 server:
   port: 8084
+  compression:
+    enabled: true
 spring:
   application:
     name: wccloud-admin-server
   cloud:
     nacos:
-      server-addr: home0122:8848
+      server-addr: 10.96.3.1:8848
       username: nacos
       password: nacos
       discovery:
@@ -14,3 +16,7 @@ spring:
         namespace: ${spring.cloud.nacos.discovery.namespace}
         shared-configs:
           - data-id: wccloud-shared.yaml
+    openfeign:
+      httpclient:
+        enabled: true
+

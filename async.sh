@@ -1,1 +1,1 @@
-rsync -av -e ssh  --exclude={'node_modules','build','target','.nuxt','.output'} ./* root@192.168.1.22:/home/docker/jenkins/jenkins_home/workspace/wccloud/
+rsync -av -e ssh  --exclude={'node_modules','build','bin','target','.nuxt','.output'} ./* root@192.168.1.22:/home/docker/jenkins/jenkins_home/workspace/wccloud/
