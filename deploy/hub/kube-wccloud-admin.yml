@@ -1,0 +1,56 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wccloud-admin
+  name: wccloud-admin
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wccloud-admin
+  template:
+    metadata:
+      labels:
+        app: wccloud-admin
+    spec:
+      containers:
+        - image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-admin
+          ports:
+            - containerPort: 8084
+          volumeMounts:
+            - mountPath: /home/skywalking-agent
+              name: sky
+          name: wccloud-admin
+      volumes:
+        - name: sky
+          hostPath:
+            path: /home/skywalking-agent
+            type: Directory
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Equal"
+          effect: "NoSchedule"
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: wccloud-admin
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: wccloud-admin
+  name: wccloud-admin
+spec:
+  ports:
+    - port: 8084
+      name: wccloud-admin-service80
+      protocol: TCP
+      targetPort: 8084
+  selector:
+    app: wccloud-admin

@@ -1,0 +1,58 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wccloud-gateway
+  name: wccloud-gateway
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wccloud-gateway
+  template:
+    metadata:
+      labels:
+        app: wccloud-gateway
+    spec:
+      containers:
+        - image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-gateway
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - mountPath: /home/skywalking-agent
+              name: sky
+          name: wccloud-gateway
+      volumes:
+        - name: sky
+          hostPath:
+            path: /home/skywalking-agent
+            type: Directory
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Equal"
+          effect: "NoSchedule"
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: wccloud-gateway
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: wccloud-gateway
+  name: wccloud-gateway
+spec:
+  ports:
+    - port: 8081
+      name: wccloud-gateway-service80
+      protocol: TCP
+      targetPort: 8081
+      nodePort: 8081
+  selector:
+    app: wccloud-gateway
+  type: NodePort

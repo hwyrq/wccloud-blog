@@ -2,7 +2,7 @@ version: '3'
 
 services:
   wccloud-gateway:
-    image: wccloud-gateway:latest
+    image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-gateway:latest
     build:
       context: ../wccloud-gateway
       dockerfile: Dockerfile

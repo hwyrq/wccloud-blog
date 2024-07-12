@@ -1,0 +1,50 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nuxt-admin
+  name: nuxt-admin
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nuxt-admin
+  template:
+    metadata:
+      labels:
+        app: nuxt-admin
+    spec:
+      containers:
+        - image: registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_admin
+          ports:
+            - containerPort: 8001
+          name: nuxt-admin
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Equal"
+          effect: "NoSchedule"
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: nuxt-admin
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nuxt-admin
+  name: nuxt-admin
+spec:
+  ports:
+    - port: 8001
+      name: nuxt-admin-service80
+      protocol: TCP
+      targetPort: 8001
+      nodePort: 8001
+  selector:
+    app: nuxt-admin
+  type: NodePort

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   wccloud-admin:
-    image: wccloud-admin:latest
+    image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-admin:latest
     build:
       context: ../wccloud-admin
       dockerfile: Dockerfile

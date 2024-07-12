@@ -1,0 +1,56 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wccloud-web-rust
+  name: wccloud-web-rust
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wccloud-web-rust
+  template:
+    metadata:
+      labels:
+        app: wccloud-web-rust
+    spec:
+      containers:
+        - image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-web-rust
+          ports:
+            - containerPort: 8085
+          volumeMounts:
+            - mountPath: /home/skywalking-agent
+              name: sky
+          name: wccloud-web-rust
+      volumes:
+        - name: sky
+          hostPath:
+            path: /home/skywalking-agent
+            type: Directory
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Equal"
+          effect: "NoSchedule"
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: wccloud-web-rust
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: wccloud-web-rust
+  name: wccloud-web-rust
+spec:
+  ports:
+    - port: 8085
+      name: wccloud-web-rust-service80
+      protocol: TCP
+      targetPort: 8085
+  selector:
+    app: wccloud-web-rust

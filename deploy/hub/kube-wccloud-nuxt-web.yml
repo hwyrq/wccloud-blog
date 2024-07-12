@@ -1,0 +1,50 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nuxt-web
+  name: nuxt-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nuxt-web
+  template:
+    metadata:
+      labels:
+        app: nuxt-web
+    spec:
+      containers:
+        - image: registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_web
+          ports:
+            - containerPort: 8000
+          name: nuxt-web
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Equal"
+          effect: "NoSchedule"
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: nuxt-web
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nuxt-web
+  name: nuxt-web
+spec:
+  ports:
+    - port: 8000
+      name: nuxt-web-service80
+      protocol: TCP
+      targetPort: 8000
+      nodePort: 8000
+  selector:
+    app: nuxt-web
+  type: NodePort

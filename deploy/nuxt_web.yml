@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nuxt_web:
-    image: nuxt_web:latest
+    image: registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_web:latest
     build:
       context: ../nuxt_web
       dockerfile: Dockerfile

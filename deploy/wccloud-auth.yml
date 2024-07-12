@@ -2,7 +2,7 @@ version: '3'
 
 services:
   wccloud-auth:
-    image: wccloud-auth:latest
+    image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-auth:latest
     build:
       context: ../wccloud-auth
       dockerfile: Dockerfile

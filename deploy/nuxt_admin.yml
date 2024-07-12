@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nuxt_admin:
-    image: nuxt_admin:latest
+    image: registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_admin:latest
     build:
       context: ../nuxt_admin
       dockerfile: Dockerfile
