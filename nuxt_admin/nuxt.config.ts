@@ -25,6 +25,9 @@ export default defineNuxtConfig({
       include: ['dayjs', 'dayjs/plugin/*', 'element-plus']
     }
   },
+
+  app: {
+    "baseURL": "/admin",
+  },
+  compatibilityDate: '2024-07-12',
 })
-
-

@@ -36,7 +36,7 @@ const submitLogin = async function () {
     localStorage.setItem("refreshToken", data.data.refreshToken);
     localStorage.setItem("expireTime", data.data.expireTime);
     localStorage.setItem("nickname", data.data.nickname);
-    location.href = "/home";
+    useRouter().push("/home")
   }else {
     ElMessage({message:data.msg, type: 'error'})
   }

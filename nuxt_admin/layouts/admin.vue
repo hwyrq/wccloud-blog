@@ -103,7 +103,7 @@ const handleCommand = async function (command: string) {
   if (command == "logout") {
     let data = await logout();
     ElMessage({message: data.msg, type: 'success'});
-    location.href = "/login";
+    useRouter().push("/login");
   }else if (command == "resetPassword") {
     pwdRef.value.setDialogVisible(true);
   }
@@ -178,6 +178,7 @@ if (useRoute().path == "/") {
     }
   }
 }
+
 </script>
 
 <style  lang="css">

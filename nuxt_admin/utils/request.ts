@@ -36,7 +36,7 @@ requester.interceptors.response.use(
                 confirmButtonText: 'OK',
                 callback: (action: Action) => {
                     localStorage.setItem("accessToken", "1");
-                    location.href = "/login";
+                    useRouter().push("/login");
                 },
             });
             return Promise.reject('error');

@@ -8,18 +8,19 @@
   "private": true,
   "scripts": {
     "build": "nuxt build --dotenv .env.pro",
-    "dev-admin": "nuxt dev --port 8001 --host 127.0.0.1 --dotenv .env.dev",
+    "dev-admin": "nuxt dev --port 8010 --host 192.168.1.23 --dotenv .env.dev",
     "generate": "nuxt generate --dotenv .env.pro",
     "preview": "nuxt preview --dotenv .env.dev",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@element-plus/nuxt": "^1.0.8",
+    "@element-plus/nuxt": "^1.0.9",
     "@nuxtjs/axios": "^5.13.6",
     "json-bigint": "^1.0.0",
-    "nuxt": "^3.11.2",
+    "nuxt": "^3.12.3",
     "vditor": "^3.10.4",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vite": "^5.3.3",
+    "vue": "^3.4.31",
+    "vue-router": "^4.4.0"
   }
 }
