@@ -16,7 +16,7 @@
  */
 
 const bk = function () {
-  location.href = "/";
+  useRouter().push("/");
 };
 </script>
 
