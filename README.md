@@ -30,26 +30,26 @@ nuxt-web    nuxt博客门户网站
 
 ### blog页面展示
 
-![](deploy/1719192848727_image.png)
+![](doc/img/1719192848727_image.png)
 
-![](deploy/1719192935116_image.png)
+![](doc/img/1719192935116_image.png)
 
 ### 后台管理展示
 
-![](deploy/1719192973894_image.png)
+![](doc/img/1719192973894_image.png)
 
-![](deploy/1719192995779_image.png)
+![](doc/img/1719192995779_image.png)
 
-![](deploy/1719193044373_image.png)
+![](doc/img/1719193044373_image.png)
 
-![](deploy/1719193126291_image.png)
+![](doc/img/1719193126291_image.png)
 
-![](deploy/1719193180910_image.png)
+![](doc/img/1719193180910_image.png)
 
-![](deploy/1719193263263_image.png)
+![](doc/img/1719193263263_image.png)
 
 ### rust低内存占用真是没的说，如果模块都用rust实现的话，阿里云2c2g服务器就可以随便搞了
 
 目前项目跑在6c16g服务器，后期考虑都用rust替代
 
-![](deploy/1719193594538_image.png)
+![](doc/img/1719193594538_image.png)
