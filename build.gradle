@@ -8,6 +8,13 @@ plugins {
 group = 'top.wccloud'
 version = '0.0.1-SNAPSHOT'
 
+apply plugin: 'idea'
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
 java {
     sourceCompatibility = '21'
 }
@@ -86,6 +93,10 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
         implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
+
+        implementation 'org.apache.skywalking:apm-toolkit-logback-1.x:9.2.0'
+
+        implementation 'org.springframework.boot:spring-boot-starter-amqp:3.3.1'
 
 
         implementation 'cn.hutool:hutool-all:5.8.27'
