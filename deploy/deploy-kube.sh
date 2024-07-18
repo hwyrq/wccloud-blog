@@ -2,6 +2,7 @@
 # author wcz
 #当前jenkins部署在docker内，构建直接执行当前deploy.sh文件即可，java需要提前安装好gradle,以及nodejs
 #当前只打包镜像并推送到阿里云
+#宿主机应当先设置时区 echo 'Asia/Shanghai' > /etc/timezone
 echo '开始构建'
 cd deploy || exit
 pwd
@@ -21,7 +22,7 @@ works=$(git log -1 --stat |awk -F ' ' '{print $1}' |awk -F '/' '{print $1}' | aw
 
 #手动修改这里，临时重新部署某一个
 works='#wccloud-admin# #wccloud-auth# #wccloud-gateway# #wccloud-web-rust# #nuxt_admin# #nuxt_web# '
-works='#nuxt_admin#  '
+works='#wccloud-web-rust#   '
 echo "works: "
 echo $works
 #java
@@ -30,7 +31,7 @@ if [ "$(echo $works|grep '#wccloud-admin#')" != "" ]; then
   package
   if [ "$(docker ps|grep wccloud-admin)" != "" ]; then
     echo  'stop rm rmi '
-   docker stop wccloud-admin && docker rm wccloud-admin && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-admin
+#   docker stop wccloud-admin && docker rm wccloud-admin && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-admin
   fi
   docker compose -f wccloud-admin.yml build
   docker push registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-admin
@@ -41,7 +42,7 @@ if [ "$(echo $works|grep '#wccloud-auth#')" != "" ]; then
   package
   if [ "$(docker ps|grep wccloud-auth)" != "" ]; then
     echo  'stop rm rmi '
-   docker stop wccloud-auth && docker rm wccloud-auth && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-auth
+#   docker stop wccloud-auth && docker rm wccloud-auth && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-auth
   fi
   docker compose -f wccloud-auth.yml build
   docker push registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-auth
@@ -90,9 +91,9 @@ if [ "$(echo $works|grep '#nuxt_admin#')" != '' ]; then
   npm install
   echo 'npm run build...'
   npm run build
-  if [ "$(docker ps|grep nuxt_admin)" != "" ]; then
-   docker stop nuxt_admin && docker rm nuxt_admin && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_admin
-  fi
+#  if [ "$(docker ps|grep nuxt_admin)" != "" ]; then
+#   docker stop nuxt_admin && docker rm nuxt_admin && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_admin
+#  fi
   cd ..
   cd deploy || exit
   echo 'docker compose -f nuxt_admin.yml build'
@@ -105,9 +106,9 @@ if [ "$(echo $works|grep '#nuxt_web#')" != '' ]; then
   cd nuxt_web || exit
   npm install
   npm run build
-  if [ "$(docker ps|grep nuxt_web)" != "" ]; then
-   docker stop nuxt_web && docker rm nuxt_web && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_web
-  fi
+#  if [ "$(docker ps|grep nuxt_web)" != "" ]; then
+#   docker stop nuxt_web && docker rm nuxt_web && docker rmi registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_web
+#  fi
   cd ..
   cd deploy || exit
   docker compose -f nuxt_web.yml build
