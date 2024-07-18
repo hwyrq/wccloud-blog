@@ -16,18 +16,30 @@ spec:
         app: wccloud-admin
     spec:
       containers:
-        - image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-admin
+        - name: wccloud-admin
+          image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-admin
           ports:
             - containerPort: 8084
           volumeMounts:
-            - mountPath: /home/skywalking-agent
-              name: sky
-          name: wccloud-admin
+            - name: sky
+              mountPath: /home/skywalking-agent
+            - name: localtime
+              mountPath: /etc/localtime
+              readOnly: true
+            - name: timezone
+              mountPath: /etc/timezone
+              readOnly: true
       volumes:
         - name: sky
           hostPath:
             path: /home/skywalking-agent
             type: Directory
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: timezone
+          hostPath:
+            path: /etc/timezone
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Equal"

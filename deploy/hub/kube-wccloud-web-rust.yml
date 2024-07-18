@@ -16,18 +16,28 @@ spec:
         app: wccloud-web-rust
     spec:
       containers:
-        - image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-web-rust
+        - name: wccloud-web-rust
+          image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-web-rust
           ports:
             - containerPort: 8085
           volumeMounts:
-            - mountPath: /home/skywalking-agent
-              name: sky
-          name: wccloud-web-rust
+            - name: localtime
+              mountPath: /etc/localtime
+              readOnly: true
+            - name: timezone
+              mountPath: /etc/timezone
+              readOnly: true
       volumes:
         - name: sky
           hostPath:
             path: /home/skywalking-agent
             type: Directory
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: timezone
+          hostPath:
+            path: /etc/timezone
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Equal"

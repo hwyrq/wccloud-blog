@@ -16,10 +16,24 @@ spec:
         app: nuxt-admin
     spec:
       containers:
-        - image: registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_admin
+        - name: nuxt-admin
+          image: registry.cn-shanghai.aliyuncs.com/wccloud/nuxt_admin
           ports:
             - containerPort: 8001
-          name: nuxt-admin
+          volumeMounts:
+            - name: localtime
+              mountPath: /etc/localtime
+              readOnly: true
+            - name: timezone
+              mountPath: /etc/timezone
+              readOnly: true
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: timezone
+          hostPath:
+            path: /etc/timezone
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Equal"
@@ -44,7 +58,6 @@ spec:
       name: nuxt-admin-service80
       protocol: TCP
       targetPort: 8001
-      nodePort: 8001
   selector:
     app: nuxt-admin
-  type: NodePort
+  clusterIP: 10.96.2.1

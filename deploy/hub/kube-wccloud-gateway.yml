@@ -16,18 +16,30 @@ spec:
         app: wccloud-gateway
     spec:
       containers:
-        - image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-gateway
+        - name: wccloud-gateway
+          image: registry.cn-shanghai.aliyuncs.com/wccloud/wccloud-gateway
           ports:
             - containerPort: 8081
           volumeMounts:
-            - mountPath: /home/skywalking-agent
-              name: sky
-          name: wccloud-gateway
+            - name: sky
+              mountPath: /home/skywalking-agent
+            - name: localtime
+              mountPath: /etc/localtime
+              readOnly: true
+            - name: timezone
+              mountPath: /etc/timezone
+              readOnly: true
       volumes:
         - name: sky
           hostPath:
             path: /home/skywalking-agent
             type: Directory
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: timezone
+          hostPath:
+            path: /etc/timezone
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Equal"
@@ -52,7 +64,6 @@ spec:
       name: wccloud-gateway-service80
       protocol: TCP
       targetPort: 8081
-      nodePort: 8081
   selector:
     app: wccloud-gateway
-  type: NodePort
+  clusterIP: 10.96.2.0
