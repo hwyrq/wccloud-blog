@@ -16,6 +16,7 @@
       Copyright <a href="http://wccloud.top/"> {{ siteInfo.name }}</a>
       <a href="https://beian.miit.gov.cn/" target="_blank">{{ siteInfo.recordNum }}</a>
       <a href="https://beian.mps.gov.cn/#/query/webSearch?code=34019202002289" rel="noreferrer" target="_blank">皖公网安备34019202002289</a>
+      <a href="http://wccloud.top/" rel="noreferrer" target="_blank">"jdk21 nuxt3 rust" on k8s </a>
     </el-footer>
   </el-container>
 </template>
