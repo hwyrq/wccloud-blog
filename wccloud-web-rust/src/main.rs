@@ -20,7 +20,15 @@ mod controller;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     //初始化日志
-    tracing_subscriber::fmt::init();
+    use time::{format_description, UtcOffset};
+    use tracing_subscriber::fmt::time::OffsetTime;
+    let format = "[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:3]";
+    tracing_subscriber::fmt()
+        .with_timer(OffsetTime::new(
+            UtcOffset::current_local_offset().unwrap(),
+            format_description::parse(format).unwrap(),
+        ))
+        .init();
     //初始化配置文件
     init_config_file();
     //初始化雪花ID

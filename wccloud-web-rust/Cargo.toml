@@ -17,7 +17,7 @@ actix-cors={version = "*"}
 actix-multipart="0"
 nacos-sdk = { version = "0.3", features = ["default"] }
 tracing = "0.1.40"
-tracing-subscriber = "0.3.18"
+tracing-subscriber = {version =  "0.3.18",features = ["local-time"] }
 lazy_static = "1"
 #rbs = { version = "4.5" }
 #rbatis = '4.5.21'
@@ -26,7 +26,7 @@ lazy_static = "1"
 fastdate = { version = "0.3" }
 chrono="0"
 sea-orm = { version = "0.12", features = ["sqlx-mysql", "runtime-tokio-native-tls", "macros", "debug-print"] }
-log = "0.4"
+log = { version = "0.4"}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
@@ -42,3 +42,4 @@ rand = { version = "0.8.5", features = [] }
 http = "0.2.12"
 config  ="*"
 get_local_info  ="*"
+time = "0.3.36"

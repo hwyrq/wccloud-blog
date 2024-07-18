@@ -40,8 +40,8 @@ impl NamingEventListener for MyInstanceChangeListener {
 pub async fn init_nacos() {
     let server_addr = get_config_value::<String>("spring.cloud.nacos.server-addr");
     let namespace =get_config_value::<String>("spring.cloud.nacos.discovery.namespace");
-    let auth_username = get_config_value::<String>("spring.cloud.nacos.username");
-    let auth_password = get_config_value::<String>("spring.cloud.nacos.password");
+    /*let auth_username = get_config_value::<String>("spring.cloud.nacos.username");
+    let auth_password = get_config_value::<String>("spring.cloud.nacos.password");*/
     let service_name = get_config_value::<String>("spring.application.name");
     let config_name = get_config_value::<String>("spring.cloud.nacos.config.name");
     let file_extension = get_config_value::<String>("spring.cloud.nacos.config.file-extension");
@@ -57,7 +57,7 @@ pub async fn init_nacos() {
     //config
     let config_server = ConfigServiceBuilder::new(
         client_props.clone()
-    ).enable_auth_plugin_http().build().unwrap();
+    )/*.enable_auth_plugin_http()*/.build().unwrap();
 
     let config_resp = config_server.get_config(
         data_id.clone(),
@@ -91,7 +91,7 @@ fn listener(service_name: String, data_id: String, arc: Arc<MyConfigChangeListen
             tracing::error!("listening config error{:?}",err)
         }
     }
-    let naming_server = NamingServiceBuilder::new(client_props).enable_auth_plugin_http().build().unwrap();
+    let naming_server = NamingServiceBuilder::new(client_props)/*.enable_auth_plugin_http()*/.build().unwrap();
     let subscriber = Arc::new(MyInstanceChangeListener);
     let _subscriber_ret = naming_server.subscribe(
         service_name.clone(),
