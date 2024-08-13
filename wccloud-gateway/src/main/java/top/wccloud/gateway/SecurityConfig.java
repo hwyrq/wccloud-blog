@@ -1,7 +1,11 @@
 package top.wccloud.gateway;
 
 import cn.hutool.json.JSONUtil;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +27,10 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
+
 /**
  * 网关统一认证以及授权
  * @author wcz
@@ -35,6 +42,9 @@ public class SecurityConfig {
 
 /*    @Resource
     AuthFilter authFilter;*/
+
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
 
     @Bean
@@ -59,27 +69,34 @@ public class SecurityConfig {
             exchangeSpec.pathMatchers("/*/auth/**").permitAll();
             exchangeSpec.pathMatchers("/*/test/a").permitAll();
             exchangeSpec.pathMatchers("/actuator/health").permitAll();
+            exchangeSpec.pathMatchers("/*/actuator/health").permitAll();
 //            exchangeSpec.pathMatchers("/**").permitAll();
 //            exchangeSpec.pathMatchers("/*/wccloud-auth/test/a").permitAll();
             exchangeSpec.pathMatchers("/**").access(new ReactiveAuthorizationManager<AuthorizationContext>() {
                 @Override
                 public Mono<AuthorizationDecision> check(Mono<Authentication> authentication, AuthorizationContext object) {
-                    RequestPath path = object.getExchange().getRequest().getPath();
-                    String value = object.getExchange().getRequest().getPath().toString();
-                    log.info(value);
-                    if (value.startsWith("/wccloud-web-rust/anonymous")) {
-                        return authentication.thenReturn(new AuthorizationDecision(true));
-                    }
+                    String path = object.getExchange().getRequest().getPath().toString();
+                    String token = null;
                     List<String> tokenList = object.getExchange().getRequest().getHeaders().get("Token");
                     if (tokenList != null) {
-                        String tokenValue = tokenList.getFirst();
-                        Boolean hasKey = redisTemplate.opsForValue().get("accessToken:" + tokenValue) != null;
-                        if (!hasKey) {
-                            throw new ServiceException(JSONUtil.toJsonStr(Result.error(-2, "未登录，请登录", null)));
-                        }
+                        token = tokenList.getFirst();
+                    }
+                    Long userId = (Long) redisTemplate.opsForValue().get("accessToken:" + token);
 
+                    HashMap<String, Object> hashMap = new HashMap<>() {{
+                        put("userId", userId);
+                        put("userAgent", object.getExchange().getRequest().getHeaders().get("User-Agent").getFirst());
+                        put("ip", object.getExchange().getRequest().getLocalAddress().getAddress().getHostAddress());
+                        put("path", path);
+                    }};
+                    String userInfo = JSONUtil.toJsonStr(hashMap);
+                    log.info("访问信息：" + userInfo);
+                    rabbitTemplate.convertAndSend("pro.log","visit.key",userInfo,new CorrelationData());
+                    if (path.startsWith("/wccloud-web-rust/anonymous")) {
                         return authentication.thenReturn(new AuthorizationDecision(true));
-
+                    }
+                    if (userId != null) {
+                        return authentication.thenReturn(new AuthorizationDecision(true));
                     } else {
                         throw new ServiceException(JSONUtil.toJsonStr(Result.error(-2, "未登录，请登录", null)));
                     }

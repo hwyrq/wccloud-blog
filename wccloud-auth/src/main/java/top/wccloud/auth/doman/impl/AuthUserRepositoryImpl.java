@@ -74,8 +74,8 @@ public class AuthUserRepositoryImpl extends ServiceImpl<AuthUserMapper, AuthUser
         user.setAccessToken(accessToken);
         user.setRefreshToken(refreshToken);
         user.setExpireTime(LocalDateTime.now().plusMinutes(30));
-        redisTemplate.opsForSet().add("accessToken", accessToken, user.getUserId());
-        redisTemplate.opsForSet().add("refreshToken", refreshToken, user.getUserId());
+//        redisTemplate.opsForSet().add("accessToken", accessToken, user.getUserId());
+//        redisTemplate.opsForSet().add("refreshToken", refreshToken, user.getUserId());
         redisTemplate.opsForValue().set("accessToken:" + accessToken, user.getUserId(), 30, TimeUnit.HOURS);
         redisTemplate.opsForValue().set("refreshToken:" + refreshToken, 1, 300, TimeUnit.HOURS);
     }
