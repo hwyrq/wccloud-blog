@@ -36,7 +36,7 @@ dependencies {
     implementation 'org.hibernate:hibernate-validator:8.0.1.Final'
 }
 
-allprojects{
+allprojects {
     apply plugin: 'java'//重要，没这个不能实现子模块依赖父模块定义的依赖
 
     group = 'top.wccloud'
@@ -65,7 +65,6 @@ allprojects{
     }
 
 
-
 }
 
 
@@ -84,6 +83,8 @@ subprojects {
 
         implementation 'org.springframework.cloud:spring-cloud-starter'
         implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+        implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.1'
+        implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer' //openFeign 需要这个,gateway 需要这个
 
         implementation 'com.alibaba.cloud:spring-cloud-alibaba-dependencies:2022.0.0.0'
         implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:2022.0.0.0'
@@ -91,21 +92,36 @@ subprojects {
 
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.boot:spring-boot-starter-cache:3.2.4'
+        implementation 'org.springframework.boot:spring-boot-starter-amqp:3.3.1'
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+        implementation 'org.springframework.boot:spring-boot-starter-security'
 
-        implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
 
         implementation 'org.apache.skywalking:apm-toolkit-logback-1.x:9.2.0'
+        implementation 'org.apache.skywalking:apm-toolkit-trace:9.2.0'
 
-        implementation 'org.springframework.boot:spring-boot-starter-amqp:3.3.1'
+        implementation 'org.apache.commons:commons-pool2:2.12.0' //lettuce连接池需要这个
 
+
+        implementation 'com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.5.0'
+        implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
+
+
+        implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.6'
+        implementation 'com.baomidou:dynamic-datasource-spring-boot3-starter:4.3.0'
+
+        implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 
         implementation 'cn.hutool:hutool-all:5.8.27'
 
+        implementation 'com.mysql:mysql-connector-j'
+
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
+        annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
-        runtimeOnly 'com.mysql:mysql-connector-j'
     }
     dependencyManagement {
         imports {
