@@ -1,5 +1,6 @@
 package top.wccloud.gateway;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +67,6 @@ public class SecurityConfig {
             exchangeSpec.pathMatchers("/*/v3/api-docs/**").permitAll();
             exchangeSpec.pathMatchers("/*/doc.html/**").permitAll();
             exchangeSpec.pathMatchers("/*/webjars/**").permitAll();
-            exchangeSpec.pathMatchers("/*/auth/**").permitAll();
             exchangeSpec.pathMatchers("/*/test/a").permitAll();
             exchangeSpec.pathMatchers("/actuator/health").permitAll();
             exchangeSpec.pathMatchers("/*/actuator/health").permitAll();
@@ -84,15 +84,15 @@ public class SecurityConfig {
                     Long userId = (Long) redisTemplate.opsForValue().get("accessToken:" + token);
 
                     HashMap<String, Object> hashMap = new HashMap<>() {{
-                        put("userId", userId);
-                        put("userAgent", object.getExchange().getRequest().getHeaders().get("User-Agent").getFirst());
-                        put("ip", object.getExchange().getRequest().getLocalAddress().getAddress().getHostAddress());
+                        put("userId", ObjectUtil.defaultIfNull(userId, 0));
+                        put("userAgent", ObjectUtil.defaultIfNull(object.getExchange().getRequest().getHeaders().get("User-Agent").getFirst(),""));
+                        put("ip", ObjectUtil.defaultIfNull(object.getExchange().getRequest().getRemoteAddress().getAddress().getHostAddress(),""));
                         put("path", path);
                     }};
                     String userInfo = JSONUtil.toJsonStr(hashMap);
                     log.info("访问信息：" + userInfo);
                     rabbitTemplate.convertAndSend("pro.log","visit.key",userInfo,new CorrelationData());
-                    if (path.startsWith("/wccloud-web-rust/anonymous")) {
+                    if (path.startsWith("/wccloud-web-rust/anonymous") || path.contains("/auth/login")) {
                         return authentication.thenReturn(new AuthorizationDecision(true));
                     }
                     if (userId != null) {

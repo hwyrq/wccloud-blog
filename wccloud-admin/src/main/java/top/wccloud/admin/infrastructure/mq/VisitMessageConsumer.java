@@ -42,7 +42,9 @@ public class VisitMessageConsumer {
         log.info(str);
 
         SysVisitDO sysVisitDO = JSONUtil.toBean(str, SysVisitDO.class);
-
+        if (sysVisitDO.getUserId() == null) {
+            sysVisitDO.setUserId(0L);
+        }
         sysVisitMapper.insert(sysVisitDO);
 
     }

@@ -207,6 +207,26 @@ LOCK TABLES `web_type` WRITE;
 /*!40000 ALTER TABLE `web_type` DISABLE KEYS */;
 INSERT INTO `web_type` VALUES (1238779418994803663,'的轨顶风道',1,'1970-01-01 00:00:00',1,'2024-05-13 08:14:48',1),(1238782547790398686,'后端',1,'1970-01-01 00:00:00',1,'1970-01-01 00:00:00',0),(1238843020606964758,'222',1,'1970-01-01 00:00:00',1,'2024-05-13 08:14:48',1),(1238850033550362741,'多少度',1,'1970-01-01 00:00:00',1,'2024-05-13 08:14:48',1),(1239423166653140948,'大数据',1,'1970-01-01 00:00:00',1,'1970-01-01 00:00:00',0),(1239453122351335930,'运维',1,'1970-01-01 00:00:00',1,'1970-01-01 00:00:00',0),(1239494430872831757,'111',1,'1970-01-01 00:00:00',1,'2024-05-13 08:28:40',1),(1239494507485989598,'333',1,'1970-01-01 00:00:00',1,'2024-05-19 10:56:24',1),(1241706885829102860,'测试',1,'1970-01-01 00:00:00',1,'1970-01-01 00:00:00',0),(1244641226674670792,'1',1,'1970-01-01 00:00:00',1,'1970-01-01 00:00:00',0);
 /*!40000 ALTER TABLE `web_type` ENABLE KEYS */;
+
+DROP TABLE IF EXISTS `sys_visit`;
+
+create table sys_visit
+(
+    visit_id       bigint                             not null comment '访问ID'
+        primary key,
+    user_id        bigint                             not null comment '用户ID',
+    path           varchar(128)                       not null comment '路径',
+    ip             varchar(32)                        not null comment 'ip',
+    user_agent     varchar(256)                       not null comment 'user_agent',
+    create_user_id bigint                             not null comment '创建者',
+    create_time    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_user_id bigint                             not null comment '更新者',
+    update_time    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    deleted        tinyint  default 0                 not null comment '是否删除'
+)
+    comment '访问记录';
+
+
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
