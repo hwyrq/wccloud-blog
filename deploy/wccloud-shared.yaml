@@ -1,0 +1,83 @@
+#这里是nacos公共配置，推荐使用r-nacos，占用内存更低
+spring:
+  main:
+    allow-circular-references: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  cloud:
+    compatibility-verifier:
+      enabled: false
+  data:
+    redis:
+      host: 192.168.1.22
+      port: 6379
+      password: ----------
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 10
+          max-idle: 10
+          min-idle: 8 #线程池最小空闲
+          max-wait: 5000ms
+          time-between-eviction-runs: 20s #空闲线程回收间隔，
+          #只有指定了这个，min-idle才有效，并在第一次访问redis后，才会开始轮询；开始后，若连接数量小于min-idle，则添加,
+          #我可以说这个玩意很弱智嘛,不能初始化的pool都不是一个好的pool
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          username: root
+          password: ----------
+          driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+          url: jdbc:p6spy:mysql://192.168.1.22:3306/wccloud_blog?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&useSSL=false&serverTimezone=Asia/Shanghai
+  cache:
+    type: REDIS
+    redis:
+      key-prefix: "wccloud:spring-cache:"
+      time-to-live: 1h
+  rabbitmq:
+    addresses: 192.168.1.22:5672
+    username: rabbit
+    password: ----------
+    cache:
+      connection:
+        mode: connection
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: assign_id
+  type-aliases-package: top.wccloud
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+springdoc:
+  swagger-ui:
+    enabled: true
+  #    path: /doc.html
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  group-configs:
+    - group: "default"
+      paths-to-match: "/**"
+      packages-to-scan: top.wccloud
+decorator:
+  datasource:
+    p6spy:
+      # 全部可用参数参照该类：com.p6spy.engine.spy.appender.CustomLineFormat
+      log-format: "\ntime:%(executionTime) || sql:%(sql)\n"
+      # 自定义日志类的作用仅仅是改变了打印的颜色，如果不需要可以不加
+minio:
+  url: http://minio-api.wccloud.top
+  bucket-name: wccloud
+  access-key: ----------
+  secret-key: ----------
