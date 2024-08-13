@@ -1,5 +1,5 @@
 <template>
-  <template v-for="(item) in listMenu">
+  <template v-for="(item) in getCurrentInstance()?.attrs.listMenu">
 
     <el-menu-item :index="item.menuId" v-if="item!=null&&item.type==2" >
       <template #title>{{ item.menuName }}</template>
@@ -14,11 +14,9 @@
 /**
  * @author wcz
  */
-const listMenu = ref();
-const instance = getCurrentInstance();
 
 onMounted(() => {
-  listMenu.value = instance?.attrs.listMenu;
+
 });
 
 </script>

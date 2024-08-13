@@ -20,7 +20,6 @@ const requester = axios.create({
 requester.interceptors.request.use(
     config => {
         console.log("config");
-        console.log(config);
         config.headers['Token'] = localStorage.getItem("accessToken")
         return config
     },

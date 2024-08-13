@@ -66,8 +66,7 @@ import type {TabPaneName, TabsPaneContext} from "element-plus";
 
 let instance = getCurrentInstance();
 const listMenu = ref([]);
-const data = await listStatus0();
-listMenu.value = data.data;
+
 const nickname = ref();
 const menus: any[] = [];
 const menuMap = {};
@@ -81,13 +80,16 @@ const findby = function (item) {
     }
   }
 };
-for (const item of listMenu.value) {
-  findby(item);
-}
+
 
 const tabs = ref([]);
 const tabsValue = ref("");
 onMounted(async () => {
+  listMenu.value = (await listStatus0()).data;
+  for (const item of listMenu.value) {
+    findby(item);
+  }
+  processFirst();
   window.addEventListener("resize", () => {
     menuStyle.value.height = window.innerHeight-30 +"px";
   });
@@ -162,22 +164,26 @@ const tabRemove = function (name: TabPaneName) {
 
 const defaultActive = ref(0);
 
-//将菜单的第一个作为首页，不写死，
-if (useRoute().path == "/") {
-  if (listMenu.value.length != 0) {
-    useRouter().push(listMenu.value[0].path);
-    select(listMenu.value[0].menuId, [listMenu.value[0].menuId], null, null);
-    defaultActive.value = listMenu.value[0].menuId
-  }
-}else {
-  //处理浏览器刷新的情况
-  for (const menu of menus) {
-    if (useRoute().path == menu.path) {
-      select(menu.menuId, [menu.menuId], [menu.menuId], null);
-      defaultActive.value = menu.menuId;
+const processFirst = function () {
+  //将菜单的第一个作为首页，不写死，
+  if (useRoute().path == "/") {
+    if (listMenu.value.length != 0) {
+      useRouter().push(listMenu.value[0].path);
+      select(listMenu.value[0].menuId, [listMenu.value[0].menuId], null, null);
+      defaultActive.value = listMenu.value[0].menuId
+    }
+  }else {
+    //处理浏览器刷新的情况
+    for (const menu of menus) {
+      if (useRoute().path == menu.path) {
+        select(menu.menuId, [menu.menuId], [menu.menuId], null);
+        defaultActive.value = menu.menuId;
+      }
     }
   }
-}
+};
+
+
 
 </script>
 
