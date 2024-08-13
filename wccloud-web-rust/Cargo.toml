@@ -6,40 +6,40 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio="1"
-actix-web = { version = "4", default-features = false, features = [
+tokio="1.39"
+actix-web = { version = "4.8", default-features = false, features = [
     "macros",
     "compress-brotli",
     "compress-gzip",
     "cookies",
     "http2", ] }
-actix-cors={version = "*"}
-actix-multipart="0"
+actix-cors={version = "0.7"}
+actix-multipart="0.7"
 nacos-sdk = { version = "0.3", features = ["default"] }
-tracing = "0.1.40"
-tracing-subscriber = {version =  "0.3.18",features = ["local-time"] }
-lazy_static = "1"
+tracing = "0.1"
+tracing-subscriber = {version =  "0.3",features = ["local-time"] }
+lazy_static = "1.5"
 #rbs = { version = "4.5" }
 #rbatis = '4.5.21'
 #rbdc-mysql = { version = "4.5", default-features = false, features = ["tls-native-tls"] }
 
 fastdate = { version = "0.3" }
-chrono="0"
+chrono="0.4"
 sea-orm = { version = "0.12", features = ["sqlx-mysql", "runtime-tokio-native-tls", "macros", "debug-print"] }
 log = { version = "0.4"}
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
-redis = {version =  "0",features = ["tokio-comp","json"]  }
-redis_pool = "0"
-xor-str="*"
+redis = {version =  "0.25",features = ["tokio-comp","json"]  }
+redis_pool = "0.4"
+xor-str="0.1"
 
 minio= {git = "https://gitee.com/hwyrq/minio-rs.git" }
-futures-util = "0.3.30"
-futures-executor="*"
-rs-snowflake = "*"
-rand = { version = "0.8.5", features = [] }
-http = "0.2.12"
-config  ="*"
-get_local_info  ="*"
-time = "0.3.36"
+futures-util = "0.3"
+futures-executor="0.3"
+rs-snowflake = "0.6"
+rand = { version = "0.8", features = [] }
+http = "0.2"
+config  ="0.14"
+get_local_info  ="0.2"
+time = "0.3"

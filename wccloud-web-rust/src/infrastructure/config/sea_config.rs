@@ -14,7 +14,7 @@ pub async  fn init_sea()  {
     let mysql_url: String = get_config_value("spring.datasource.dynamic.datasource.master.url");
     let mysql_url = mysql_url.replace("jdbc:p6spy:mysql://", "");
     let url = format!("mysql://{}:{}@{}",username, password,mysql_url);
-    log::info!("{}",url);
+    // log::info!("{}",url);
 
     let mut opt = ConnectOptions::new(url);
     opt.max_connections(100)

@@ -60,7 +60,7 @@ pub async fn upload(mut arg: Multipart,http_request: HttpRequest) -> impl Respon
             "/blog/" + 
             &*SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis().to_string() + 
             "_" +
-            content_disposition.get_filename().unwrap();
+            content_disposition.unwrap().get_filename().unwrap();
 
         let response = client.create_multipart_upload_old(&CreateMultipartUploadArgs::new(&bucket_name, &*filename).unwrap()).await.unwrap();
         let mut vec1: Vec<u8> = vec![];

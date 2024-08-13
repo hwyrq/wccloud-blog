@@ -75,6 +75,17 @@ pub async fn save(arg: &WebBlogSaveReqVO, http_request: &HttpRequest) -> ResultV
 
 
 pub async fn one(blog_id: i64) -> ResultVO<WebBlogOneRespVO> {
+    let (key,field) = cache_hash_key_field(&one, &blog_id);
+
+    let x: RedisResult<PageResultVO<WebBlogOneRespVO>> = redis_master().await.hget(&key, &field).await;
+    match x {
+        Ok(mut x) => {
+            log::info!("缓存读取......");
+            let r = x.list.pop().unwrap();
+            return ResultVO::success(r)
+        }
+        Err(_) => {}
+    }
     let option = WebBlog::find_by_id(blog_id).one(master()).await.unwrap().unwrap();
     let sql = "select b.* from web_blog_label a join web_label b on a.label_id = b.label_id where a.blog_id = ? ".to_string();
     let vec = web_label::Model::find_by_statement(Statement::from_sql_and_values(MySql, sql, [sea_orm::Value::BigInt(Some(blog_id))])).all(master()).await.unwrap();
@@ -84,8 +95,7 @@ pub async fn one(blog_id: i64) -> ResultVO<WebBlogOneRespVO> {
     }
     let sql = "select * from web_type where type_id = ?".to_string();
     let op = web_type::Model::find_by_statement(Statement::from_sql_and_values(MySql, sql, [sea_orm::Value::BigInt(Some(option.type_id))])).one(master()).await.unwrap();
-
-    return ResultVO::success(WebBlogOneRespVO {
+    let vo = WebBlogOneRespVO {
         blog_id: option.blog_id,
         title: option.title,
         img_url: option.img_url,
@@ -97,7 +107,10 @@ pub async fn one(blog_id: i64) -> ResultVO<WebBlogOneRespVO> {
         status: option.status,
         md: option.md,
         html: option.html,
-    });
+    };
+    redis_master().await.hset::<&String,&String,String,i64>(&key, &field, serde_json::to_string_pretty(&PageResultVO::new(vec![&vo], 0)).unwrap()).await.unwrap();
+    
+    return ResultVO::success(vo);
 }
 
 pub async fn delete(blog_id: i64) -> ResultVO<bool> {

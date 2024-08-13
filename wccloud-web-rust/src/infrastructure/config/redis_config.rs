@@ -20,7 +20,7 @@ pub async  fn init_redis() {
     let port: String = get_config_value("spring.data.redis.port");
     let password: String = get_config_value("spring.data.redis.password");
     let url = format!("redis://:{}@{}:{}/", password, host, port);
-    log::info!("{}",url);
+    // log::info!("{}",url);
 
     let open = Client::open(url);
     match open.is_ok() {
