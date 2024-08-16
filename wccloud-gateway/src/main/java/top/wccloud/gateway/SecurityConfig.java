@@ -29,9 +29,12 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -82,26 +85,10 @@ public class SecurityConfig {
                 @Override
                 public Mono<AuthorizationDecision> check(Mono<Authentication> authentication, AuthorizationContext object) {
                     String path = object.getExchange().getRequest().getPath().toString();
-                    String token = null;
-                    List<String> tokenList = object.getExchange().getRequest().getHeaders().get("Token");
-                    if (tokenList != null) {
-                        token = tokenList.getFirst();
-                    }
-                    Long userId = (Long) redisTemplate.opsForValue().get("accessToken:" + token);
+                    Long userId = (Long) redisTemplate.opsForValue().get("accessToken:" + getToken(object));
 
-                    HttpHeaders headers = object.getExchange().getRequest().getHeaders();
+                    processLog(object, userId, path);
 
-                    HashMap<String, Object> hashMap = new HashMap<>() {{
-                        put("userId", ObjectUtil.defaultIfNull(userId, 0));
-                        put("userAgent", ObjectUtil.defaultIfNull(headers.get("User-Agent").getFirst(),""));
-                        put("referer", ObjectUtil.defaultIfNull(headers.get("Referer").getFirst(),""));
-                        put("host", ObjectUtil.defaultIfNull(headers.get("Host").getFirst(),""));
-                        put("ip", ObjectUtil.defaultIfNull(object.getExchange().getRequest().getRemoteAddress().getAddress().getHostAddress(),""));
-                        put("path", path);
-                    }};
-                    String userInfo = JSONUtil.toJsonStr(hashMap);
-                    log.info("访问信息：" + userInfo);
-                    rabbitTemplate.convertAndSend(exchange,routingKey,userInfo,new CorrelationData());
                     if (path.startsWith("/wccloud-web-rust/anonymous") || path.contains("/auth/login")) {
                         return authentication.thenReturn(new AuthorizationDecision(true));
                     }
@@ -111,10 +98,48 @@ public class SecurityConfig {
                         throw new ServiceException(JSONUtil.toJsonStr(Result.error(-2, "未登录，请登录", null)));
                     }
                 }
+
+
             });
             exchangeSpec.anyExchange().authenticated();
         });
         return security.build();
     }
 
+    private void processLog(AuthorizationContext object, Long userId, String path) {
+        HttpHeaders headers = object.getExchange().getRequest().getHeaders();
+        Map<String, String> headMap = new HashMap<>();
+        for (String key : headers.keySet()) {
+            headMap.put(key, headers.getFirst(key));
+        }
+        HashMap<String, Object> hashMap = new HashMap<>() {{
+            put("userId", ObjectUtil.defaultIfNull(userId, 0));
+            put("userAgent", ObjectUtil.defaultIfNull(headMap.get("User-Agent"),""));
+            put("referer", ObjectUtil.defaultIfNull(headMap.get("Referer"),""));
+            put("host", ObjectUtil.defaultIfNull(headMap.get("Host"),""));
+            put("ip", getIp(object));
+            put("path", path);
+        }};
+        String userInfo = JSONUtil.toJsonStr(hashMap);
+        log.info("访问信息：{}", userInfo);
+        rabbitTemplate.convertAndSend(exchange,routingKey,userInfo,new CorrelationData());
+    }
+
+    private static String getToken(AuthorizationContext object) {
+        String token = null;
+        List<String> tokenList = object.getExchange().getRequest().getHeaders().get("Token");
+        if (tokenList != null) {
+            token = tokenList.getFirst();
+        }
+        return token;
+    }
+
+    private static String getIp(AuthorizationContext object) {
+        InetSocketAddress remoteAddress = object.getExchange().getRequest().getRemoteAddress();
+        String ip = "";
+        if (remoteAddress != null) {
+            ip = remoteAddress.getAddress().getHostAddress();
+        }
+        return ip;
+    }
 }
