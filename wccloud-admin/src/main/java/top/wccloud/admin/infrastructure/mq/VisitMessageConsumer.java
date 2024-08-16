@@ -41,11 +41,7 @@ public class VisitMessageConsumer {
         String str = new String(message.getBody());
         //写入访问日志
         log.info(str);
-
         SysVisitDO sysVisitDO = JSONUtil.toBean(str, SysVisitDO.class);
-        if (sysVisitDO.getUserId() == null) {
-            sysVisitDO.setUserId(0L);
-        }
         sysVisitMapper.insert(sysVisitDO);
 
     }

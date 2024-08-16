@@ -23,4 +23,6 @@ public class SysVisitDO extends BaseDO {
     private String path;//       varchar(128)      not null comment '路径',
     private String ip;//         varchar(32)       not null comment 'ip',
     private String userAgent;// varchar(256)      not null comment 'user_agent',
+    private String referer;// varchar(256)      not null comment 'user_agent',
+    private String host;// varchar(256)      not null comment 'user_agent',
 }

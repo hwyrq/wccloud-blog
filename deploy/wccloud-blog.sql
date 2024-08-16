@@ -217,6 +217,8 @@ create table sys_visit
     user_id        bigint                             not null comment '用户ID',
     path           varchar(128)                       not null comment '路径',
     ip             varchar(32)                        not null comment 'ip',
+    referer        varchar(64)                        null,
+    host           varchar(64)                        null,
     user_agent     varchar(256)                       not null comment 'user_agent',
     create_user_id bigint                             not null comment '创建者',
     create_time    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
@@ -225,6 +227,8 @@ create table sys_visit
     deleted        tinyint  default 0                 not null comment '是否删除'
 )
     comment '访问记录';
+
+
 
 
 UNLOCK TABLES;

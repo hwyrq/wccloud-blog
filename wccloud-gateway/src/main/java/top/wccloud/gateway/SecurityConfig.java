@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.RequestPath;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
@@ -88,9 +89,13 @@ public class SecurityConfig {
                     }
                     Long userId = (Long) redisTemplate.opsForValue().get("accessToken:" + token);
 
+                    HttpHeaders headers = object.getExchange().getRequest().getHeaders();
+
                     HashMap<String, Object> hashMap = new HashMap<>() {{
                         put("userId", ObjectUtil.defaultIfNull(userId, 0));
-                        put("userAgent", ObjectUtil.defaultIfNull(object.getExchange().getRequest().getHeaders().get("User-Agent").getFirst(),""));
+                        put("userAgent", ObjectUtil.defaultIfNull(headers.get("User-Agent").getFirst(),""));
+                        put("referer", ObjectUtil.defaultIfNull(headers.get("Referer").getFirst(),""));
+                        put("host", ObjectUtil.defaultIfNull(headers.get("Host").getFirst(),""));
                         put("ip", ObjectUtil.defaultIfNull(object.getExchange().getRequest().getRemoteAddress().getAddress().getHostAddress(),""));
                         put("path", path);
                     }};
