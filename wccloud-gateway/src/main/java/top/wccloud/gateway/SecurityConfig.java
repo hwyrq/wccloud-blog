@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +48,10 @@ public class SecurityConfig {
     @Resource
     private RabbitTemplate rabbitTemplate;
 
+    @Value("${mq.visit.exchange}")
+    private String exchange;
+    @Value("${mq.visit.key}")
+    private String routingKey;
 
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity security, RedisTemplate<String,Object> redisTemplate) throws Exception {
@@ -91,7 +96,7 @@ public class SecurityConfig {
                     }};
                     String userInfo = JSONUtil.toJsonStr(hashMap);
                     log.info("访问信息：" + userInfo);
-                    rabbitTemplate.convertAndSend("pro.log","visit.key",userInfo,new CorrelationData());
+                    rabbitTemplate.convertAndSend(exchange,routingKey,userInfo,new CorrelationData());
                     if (path.startsWith("/wccloud-web-rust/anonymous") || path.contains("/auth/login")) {
                         return authentication.thenReturn(new AuthorizationDecision(true));
                     }

@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import top.wccloud.admin.infrastructure.dao.entity.SysVisitDO;
 import top.wccloud.admin.infrastructure.dao.mapper.SysVisitMapper;
@@ -31,9 +32,9 @@ public class VisitMessageConsumer {
     @SneakyThrows
     @RabbitListener(bindings = {
             @QueueBinding(
-                    value = @Queue(value = "visit", autoDelete = "false",durable = "true",ignoreDeclarationExceptions = "true"),
-                    exchange = @Exchange(value = "pro.log", autoDelete = "false",durable = "true",ignoreDeclarationExceptions = "true"),
-                    key = {"visit.key"}
+                    value = @Queue(value = "${mq.visit.queue}", autoDelete = "false",durable = "true"),
+                    exchange = @Exchange(value = "${mq.visit.exchange}", autoDelete = "false",durable = "true"),
+                    key = {"${mq.visit.key}"}
             )
     },ackMode = "AUTO")
     public void receive(Message message, Channel channel) {
