@@ -1,5 +1,6 @@
 package top.wccloud.admin.infrastructure.mq;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONUtil;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -8,6 +9,7 @@ import io.lettuce.core.dynamic.annotation.Command;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -28,6 +30,9 @@ public class VisitMessageConsumer {
     @Resource
     private SysVisitMapper sysVisitMapper;
 
+    @Resource
+    private byte[] ipBytes;
+
 
     @SneakyThrows
     @RabbitListener(bindings = {
@@ -42,7 +47,17 @@ public class VisitMessageConsumer {
         //写入访问日志
         log.info(str);
         SysVisitDO sysVisitDO = JSONUtil.toBean(str, SysVisitDO.class);
+        sysVisitDO.setUpdateTime(sysVisitDO.getCreateTime());
+        Searcher newWithBuffer = Searcher.newWithBuffer(ipBytes);
+        String addr = newWithBuffer.search(sysVisitDO.getIp());
+        newWithBuffer.close();
+        log.info(addr);
+        String[] adders = addr.replaceAll("0","").split("\\|");
+        sysVisitDO.setCountry(adders[0]);
+        sysVisitDO.setRegion(adders[1]);
+        sysVisitDO.setProvince(adders[2]);
+        sysVisitDO.setCity(adders[3]);
+        sysVisitDO.setIsp(adders[4]);
         sysVisitMapper.insert(sysVisitDO);
-
     }
 }

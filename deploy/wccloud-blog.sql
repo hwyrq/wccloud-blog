@@ -220,6 +220,11 @@ create table sys_visit
     referer        varchar(64)                        null,
     host           varchar(64)                        null,
     user_agent     varchar(256)                       not null comment 'user_agent',
+    country        varchar(32)                        not null,
+    region         varchar(32)                        not null,
+    province       varchar(32)                        not null,
+    city           varchar(32)                        not null,
+    isp            varchar(32)                        not null,
     create_user_id bigint                             not null comment '创建者',
     create_time    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     update_user_id bigint                             not null comment '更新者',
@@ -227,6 +232,8 @@ create table sys_visit
     deleted        tinyint  default 0                 not null comment '是否删除'
 )
     comment '访问记录';
+
+
 
 
 

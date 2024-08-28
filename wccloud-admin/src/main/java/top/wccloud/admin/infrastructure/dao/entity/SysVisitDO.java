@@ -25,4 +25,9 @@ public class SysVisitDO extends BaseDO {
     private String userAgent;// varchar(256)      not null comment 'user_agent',
     private String referer;// varchar(256)      not null comment 'user_agent',
     private String host;// varchar(256)      not null comment 'user_agent',
+    private String country;
+    private String region;
+    private String province;
+    private String city;
+    private String isp;
 }
