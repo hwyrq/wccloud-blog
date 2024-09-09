@@ -8,7 +8,8 @@ module.exports = {
             script: './.output/server/index.mjs',
             // max_memory_restart: '100M',
             env:{
-                BASE_URL:'http://www.wccloud.top/gateway'
+                BASE_URL:'http://www.wccloud.top/gateway',
+                BASE_URL_IN:'http://10.96.2.0:8081'
             }
         }
     ]
