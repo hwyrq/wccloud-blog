@@ -1,22 +1,20 @@
 package top.wccloud.admin.infrastructure.mq;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.json.JSONUtil;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.impl.AMQImpl;
-import io.lettuce.core.dynamic.annotation.Command;
-import jakarta.annotation.Resource;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.rabbitmq.client.Channel;
+
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.json.JSONUtil;
+import jakarta.annotation.Resource;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import top.wccloud.admin.infrastructure.dao.entity.SysVisitDO;
 import top.wccloud.admin.infrastructure.dao.mapper.SysVisitMapper;
 
@@ -52,7 +50,8 @@ public class VisitMessageConsumer {
         String addr = newWithBuffer.search(sysVisitDO.getIp());
         newWithBuffer.close();
         log.info(addr);
-        String[] adders = addr.replaceAll("0","").split("\\|");
+        String[] adders = addr.replaceAll("0","").split("\\|",-1);
+        log.info(ArrayUtil.toString(adders));
         sysVisitDO.setCountry(adders[0]);
         sysVisitDO.setRegion(adders[1]);
         sysVisitDO.setProvince(adders[2]);

@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     public: {
       a_target: "_self",
       baseUrl: process.env.BASE_URL,
+      baseUrlIn: process.env.BASE_URL_IN
     },
   },
 
