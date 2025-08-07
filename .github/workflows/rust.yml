@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build
-      run: cargo build --target-dir ./wcloud-web-rust --verbose
+      run: cargo build --target-dir ./wccloud-web-rust --verbose
     - name: Run tests
       run: cargo test --verbose
