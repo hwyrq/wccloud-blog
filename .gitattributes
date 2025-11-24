@@ -1,3 +1,1 @@
-wccloud-gateway/* linguist-vendored
-wccloud-auth/* linguist-vendored
-*.java linguist-vendored=false
+*.java linguist-language=Rust
