@@ -1,0 +1,2 @@
+wccloud-gateway/* linguist-vendored
+*.java linguist-vendored=false
