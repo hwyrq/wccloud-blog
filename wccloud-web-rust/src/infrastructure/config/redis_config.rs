@@ -4,10 +4,10 @@ use std::any::type_name_of_val;
 use std::sync::OnceLock;
 use std::time::Duration;
 
-use redis::aio::MultiplexedConnection;
 use redis::Client;
-use redis_pool::connection::RedisPoolConnection;
+use redis::aio::MultiplexedConnection;
 use redis_pool::RedisPool;
+use redis_pool::connection::RedisPoolConnection;
 use serde::Serialize;
 use tokio::time::sleep;
 
