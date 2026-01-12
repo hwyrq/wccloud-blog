@@ -14,7 +14,7 @@ use nacos_sdk::api::props::ClientProps;
 
 use crate::infrastructure::config::redis_config::init_redis;
 use crate::infrastructure::config::sea_config::init_sea;
-use crate::infrastructure::config::{get_config_value, CONF};
+use crate::infrastructure::config::{get_config_value, set_config};
 
 #[allow(dead_code)]
 struct MyConfigChangeListener;
@@ -31,9 +31,7 @@ impl ConfigChangeListener for MyConfigChangeListener {
             ))
             .build()
             .unwrap();
-        unsafe {
-            CONF = Some(app_yml);
-        }
+        set_config(app_yml);
         tokio::spawn(init_sea());
         tokio::spawn(init_redis());
     }
