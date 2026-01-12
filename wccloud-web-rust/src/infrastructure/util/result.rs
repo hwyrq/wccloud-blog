@@ -2,7 +2,7 @@
 use actix_web::body::BoxBody;
 use actix_web::http::header::ContentType;
 use actix_web::{HttpRequest, HttpResponse, Responder};
-use redis::{ErrorKind, FromRedisValue, RedisError, RedisResult, Value};
+use redis::{FromRedisValue, ParsingError, Value};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -49,12 +49,14 @@ pub struct PageResultVO<T> {
 }
 
 impl<T: for<'a> Deserialize<'a>> FromRedisValue for PageResultVO<T> {
-    fn from_redis_value(v: &Value) -> RedisResult<Self> {
-        let x = RedisError::from((ErrorKind::TypeError, "空数据"));
-        match v {
-            Value::Data(a) => Ok(serde_json::from_slice::<PageResultVO<T>>(a)?),
-            _ => Err(x),
-        }
+    fn from_redis_value(value: Value) -> Result<Self, ParsingError> {
+        let bytes = match value {
+            Value::BulkString(vec_bytes) => vec_bytes,
+            Value::Nil => return Err("Received nil".into()),
+            _ => return Err("Invalid value type".into()),
+        };
+        let s = String::from_utf8(bytes).map_err(|e| ParsingError::from(e))?;
+        serde_json::from_str(&s).map_err(|e| ParsingError::from(e.to_string()))
     }
 }
 

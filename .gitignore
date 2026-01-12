@@ -7,3 +7,11 @@ r.md
 nuxt_admin/package-lock.json
 nuxt_web/package-lock.json
 wccloud-web-rust/Cargo.lock
+/spring.application.n*
+
+/wccloud-admin/spring.application.nam*
+/build/
+/.settings/org.eclipse.buildship.core.prefs
+/wccloud-auth/spring.application.name_IS_UNDEFINED.log
+/wccloud-gateway/spring.application.name_IS_UNDEFINED.log
+wccloud-web-rust/nul

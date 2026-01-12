@@ -41,7 +41,7 @@ pub async fn init_redis() {
 pub async fn redis_master() -> RedisPoolConnection<MultiplexedConnection> {
     CON.get()
         .expect("Redis connection not initialized")
-        .aquire()
+        .acquire()
         .await
         .expect("Failed to acquire Redis connection")
 }
