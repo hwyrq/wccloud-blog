@@ -26,8 +26,8 @@ pub fn next_id() -> i64 {
     let generator = GENERATOR
         .get()
         .expect("Snowflake generator not initialized");
-    let mut gen = generator.lock().unwrap();
-    gen.real_time_generate()
+    let mut generator_guard = generator.lock().unwrap();
+    generator_guard.real_time_generate()
 }
 
 #[tokio::test]
