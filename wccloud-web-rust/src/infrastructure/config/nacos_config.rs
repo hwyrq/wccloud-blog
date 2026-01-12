@@ -1,12 +1,9 @@
-//! author wcz
+//! Nacos 配置和服务注册
 use std::sync::Arc;
 
 use config::{Config, FileFormat};
-use nacos_sdk::api::config::{
-    ConfigChangeListener, ConfigResponse, ConfigService, ConfigServiceBuilder,
-};
+use nacos_sdk::api::config::{ConfigChangeListener, ConfigResponse, ConfigServiceBuilder};
 use nacos_sdk::api::constants;
-use nacos_sdk::api::naming::NamingService;
 use nacos_sdk::api::naming::{
     NamingChangeEvent, NamingEventListener, NamingServiceBuilder, ServiceInstance,
 };
@@ -48,32 +45,32 @@ impl NamingEventListener for MyInstanceChangeListener {
 pub async fn init_nacos() {
     let server_addr = get_config_value::<String>("spring.cloud.nacos.server-addr");
     let namespace = get_config_value::<String>("spring.cloud.nacos.discovery.namespace");
-    /*let auth_username = get_config_value::<String>("spring.cloud.nacos.username");
-    let auth_password = get_config_value::<String>("spring.cloud.nacos.password");*/
     let service_name = get_config_value::<String>("spring.application.name");
     let config_name = get_config_value::<String>("spring.cloud.nacos.config.name");
     let file_extension = get_config_value::<String>("spring.cloud.nacos.config.file-extension");
     let data_id = config_name + "." + &*file_extension;
     let arc = Arc::new(MyConfigChangeListener {});
+
     let client_props = ClientProps::new()
         .server_addr(server_addr)
         .namespace(namespace)
-        .app_name(service_name.clone())
-        /*.auth_username(auth_username)
-        .auth_password(auth_password)*/;
-    log::info!("{:?}", &client_props);
-    //config
-    let config_server =
-        ConfigServiceBuilder::new(client_props.clone()) /*.enable_auth_plugin_http()*/
-            .build()
-            .unwrap();
+        .app_name(service_name.clone());
 
-    let config_resp =
-        config_server.get_config(data_id.clone(), constants::DEFAULT_GROUP.to_string());
+    log::info!("{:?}", &client_props);
+
+    // 配置服务
+    let config_server = ConfigServiceBuilder::new(client_props.clone())
+        .build()
+        .unwrap();
+
+    let config_resp = config_server
+        .get_config(data_id.clone(), constants::DEFAULT_GROUP.to_string())
+        .await;
+
     match config_resp {
         Ok(config_resp) => {
             arc.notify(config_resp);
-            listener(service_name, data_id, arc, client_props, config_server);
+            listener(service_name, data_id, arc, client_props, config_server).await;
         }
         Err(err) => {
             tracing::error!("get the config {:?}", err);
@@ -81,14 +78,16 @@ pub async fn init_nacos() {
     }
 }
 
-fn listener(
+async fn listener(
     service_name: String,
     data_id: String,
     arc: Arc<MyConfigChangeListener>,
     client_props: ClientProps,
-    config_server: impl ConfigService + Sized,
+    config_server: nacos_sdk::api::config::ConfigService,
 ) {
-    let _listen = config_server.add_listener(data_id, constants::DEFAULT_GROUP.into(), arc);
+    let _listen = config_server
+        .add_listener(data_id, constants::DEFAULT_GROUP.into(), arc)
+        .await;
     match _listen {
         Ok(_) => {
             log::info!("listening the config success")
@@ -97,34 +96,38 @@ fn listener(
             tracing::error!("listening config error{:?}", err)
         }
     }
-    let naming_server = NamingServiceBuilder::new(client_props) /*.enable_auth_plugin_http()*/
-        .build()
-        .unwrap();
+
+    let naming_server = NamingServiceBuilder::new(client_props).build().unwrap();
     let subscriber = Arc::new(MyInstanceChangeListener);
-    let _subscriber_ret = naming_server.subscribe(
-        service_name.clone(),
-        Some(constants::DEFAULT_GROUP.to_string()),
-        Vec::default(),
-        subscriber,
-    );
+    let _subscriber_ret = naming_server
+        .subscribe(
+            service_name.clone(),
+            Some(constants::DEFAULT_GROUP.to_string()),
+            Vec::default(),
+            subscriber,
+        )
+        .await;
+
     let server_instance = ServiceInstance {
         ip: get_local_ip(),
         port: get_config_value::<i32>("server.port"),
+        healthy: true,
         ..Default::default()
     };
-    let _register_instance_ret = naming_server.batch_register_instance(
-        service_name,
-        Some(constants::DEFAULT_GROUP.to_string()),
-        vec![server_instance],
-    );
+
+    let _register_instance_ret = naming_server
+        .batch_register_instance(
+            service_name,
+            Some(constants::DEFAULT_GROUP.to_string()),
+            vec![server_instance],
+        )
+        .await;
 }
 
 fn get_local_ip() -> String {
-    // 尝试获取本地IP地址
     match local_ipaddress::get() {
         Some(ip) => ip,
         None => {
-            // 如果获取失败，尝试使用127.0.0.1
             log::warn!("Failed to get local IP, using 127.0.0.1");
             "127.0.0.1".to_string()
         }

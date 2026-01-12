@@ -6,16 +6,16 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio="1.39"
-actix-web = { version = "4.8", default-features = false, features = [
+tokio = "1.49.0"
+actix-web = { version = "4.12.1", default-features = false, features = [
     "macros",
     "compress-brotli",
     "compress-gzip",
     "cookies",
     "http2", ] }
-actix-cors={version = "0.7"}
-actix-multipart="0.7"
-nacos-sdk = { version = "0.3", features = ["default"] }
+actix-cors = "0.7.1"
+actix-multipart = "0.7.2"
+nacos-sdk = "0.5.3"
 tracing = "0.1"
 tracing-subscriber = {version =  "0.3",features = ["local-time"] }
 lazy_static = "1.5"
