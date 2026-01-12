@@ -4,15 +4,14 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use actix_multipart::Multipart;
 use actix_web::{HttpRequest, Responder, get, post, web};
+use bytes::Bytes;
 use futures_util::{StreamExt, TryStreamExt};
-use minio::s3::args::{
-    BucketExistsArgs, CompleteMultipartUploadArgs, CreateMultipartUploadArgs, MakeBucketArgs,
-    UploadPartArgs,
-};
-use minio::s3::client::Client;
+use minio::s3::Client;
+use minio::s3::builders::BucketExists;
 use minio::s3::creds::StaticProvider;
 use minio::s3::http::BaseUrl;
-use minio::s3::types::Part;
+use minio::s3::segmented_bytes::SegmentedBytes;
+use minio::s3::types::{PartInfo, S3Api};
 use redis::AsyncCommands;
 
 use crate::application;
@@ -44,31 +43,29 @@ pub async fn label(_item: web::Query<HashMap<String, String>>) -> impl Responder
 #[post("/file/upload")]
 pub async fn upload(mut arg: Multipart, http_request: HttpRequest) -> impl Responder {
     // 获取 MinIO 配置
-    let base_url = get_config_value::<String>("minio.url")
-        .parse::<BaseUrl>()
-        .unwrap();
+    let base_url_str = get_config_value::<String>("minio.url");
+    let base_url: BaseUrl = base_url_str.parse().unwrap();
     let bucket_name: String = get_config_value("minio.bucket-name");
     let access_key = get_config_value::<String>("minio.access-key");
     let secret_key = get_config_value::<String>("minio.secret-key");
 
     // 创建 MinIO 客户端
     let static_provider = StaticProvider::new(&access_key, &secret_key, None);
-    let client = Client::new(
-        base_url.clone(),
-        Some(Box::new(static_provider)),
-        None,
-        Some(true),
-    )
-    .unwrap();
+    let client = Client::new(base_url, Some(Box::new(static_provider)), None, None).unwrap();
 
     // 检查 bucket 是否存在，不存在则创建
-    let exists = client
-        .bucket_exists(&BucketExistsArgs::new(&bucket_name).unwrap())
+    let exists_response = BucketExists::new(client.clone(), bucket_name.clone())
+        .send()
         .await
         .unwrap();
-    if !exists {
-        client
-            .make_bucket(&MakeBucketArgs::new(&bucket_name).unwrap())
+
+    if !exists_response.exists {
+        // 创建 bucket
+        let client_clone = client.clone();
+        let bucket_name_clone = bucket_name.clone();
+        client_clone
+            .create_bucket(&bucket_name_clone)
+            .send()
             .await
             .unwrap();
     }
@@ -103,56 +100,53 @@ pub async fn upload(mut arg: Multipart, http_request: HttpRequest) -> impl Respo
             .as_millis();
         let filename = format!("{}/blog/{}_{}", user_id, timestamp, original_filename);
 
-        // 开始分片上传
-        let response = client
-            .create_multipart_upload(
-                &CreateMultipartUploadArgs::new(&bucket_name, &filename).unwrap(),
-            )
-            .await
-            .unwrap();
-
         // 读取文件数据
         let mut all_data: Vec<u8> = Vec::new();
         while let Some(Ok(b)) = field.next().await {
             all_data.extend_from_slice(&b);
         }
 
+        // 开始分片上传
+        let upload_id = client
+            .create_multipart_upload(bucket_name.clone(), filename.clone())
+            .send()
+            .await
+            .unwrap()
+            .upload_id;
+
         // 上传分片 (作为单个分片上传)
-        let part_number = 1;
+        let part_number: u16 = 1;
         let upload_response = client
             .upload_part(
-                &UploadPartArgs::new(
-                    &bucket_name,
-                    &filename,
-                    &response.upload_id,
-                    part_number,
-                    &all_data,
-                )
-                .unwrap(),
+                bucket_name.clone(),
+                filename.clone(),
+                upload_id.clone(),
+                part_number,
+                SegmentedBytes::from(Bytes::from(all_data)),
             )
+            .send()
             .await
             .unwrap();
 
         // 完成分片上传
-        let parts = vec![Part {
+        let parts = vec![PartInfo {
             number: part_number,
             etag: upload_response.etag,
+            size: 0,
         }];
 
-        let complete_response = client
-            .complete_multipart_upload(
-                &CompleteMultipartUploadArgs::new(
-                    &bucket_name,
-                    &filename,
-                    &response.upload_id,
-                    &parts,
-                )
-                .unwrap(),
-            )
+        let _complete_response = client
+            .complete_multipart_upload(bucket_name.clone(), filename.clone(), upload_id, parts)
+            .send()
             .await
             .unwrap();
 
-        url.push(complete_response.location);
+        url.push(format!(
+            "{}{}/{}",
+            base_url_str.trim_end_matches('/'),
+            bucket_name,
+            filename
+        ));
     }
 
     ResultVO::success(url)
