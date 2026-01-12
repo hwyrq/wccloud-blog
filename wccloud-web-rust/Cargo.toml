@@ -41,5 +41,5 @@ rs-snowflake = "0.6"
 rand = { version = "0.8", features = [] }
 http = "0.2"
 config  ="0.14"
-get_local_info  ="0.2"
+local_ipaddress = "0.1"
 time = "0.3"
