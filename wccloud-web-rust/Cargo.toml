@@ -34,7 +34,7 @@ redis = { version = "0.25", features = ["tokio-comp", "json"] }
 redis_pool = "0.4"
 xor-str = "0.1"
 
-minio = { git = "https://gitee.com/hwyrq/minio-rs.git" }
+minio = "0.1.0"
 futures-util = "0.3"
 futures-executor = "0.3"
 rs-snowflake = "0.6"
