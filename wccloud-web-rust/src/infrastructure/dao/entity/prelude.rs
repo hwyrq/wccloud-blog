@@ -5,3 +5,7 @@ pub use super::web_blog_label::Entity as WebBlogLabel;
 pub use super::web_label::Entity as WebLabel;
 pub use super::web_type::Entity as WebType;
 
+
+
+//cargo install sea-orm-cli@1.1.19
+//  sea-orm-cli generate entity -u mysql://root:password@192.168.1.11/wccloud_blog -o src/infrastructure/dao/entity2
