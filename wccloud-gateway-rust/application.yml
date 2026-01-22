@@ -1,0 +1,43 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: wccloud-gateway-rust
+  cloud:
+    nacos:
+      server-addr: 10.96.3.1:8848
+      username: nacos
+      password: nacos
+      discovery:
+        namespace: wccloud-dev
+      config:
+        namespace: wccloud-dev
+        name: wccloud-shared
+        file-extension: yaml
+
+# 网关路由配置 (将从Nacos配置中心加载)
+routes:
+  - id: auth
+    uri: lb://wccloud-auth-server
+    predicates:
+      - path: /wccloud-auth-server/**
+    filters:
+      - strip_prefix: 1
+  - id: web
+    uri: lb://wccloud-web-server
+    predicates:
+      - path: /wccloud-web-server/**
+    filters:
+      - strip_prefix: 1
+  - id: admin
+    uri: lb://wccloud-admin-server
+    predicates:
+      - path: /wccloud-admin-server/**
+    filters:
+      - strip_prefix: 1
+  - id: web-rust
+    uri: lb://wccloud-web-rust
+    predicates:
+      - path: /wccloud-web-rust/**
+    filters:
+      - strip_prefix: 1
